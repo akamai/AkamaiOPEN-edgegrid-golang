@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -27,7 +27,7 @@ type (
 	// ConfigVersion is used to specify a security configuration and version.
 	ConfigVersion struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 	}
 
 	// GetAdvancedSettingsPIILearningRequest is used to retrieve the PIILearning setting.
@@ -114,10 +114,12 @@ func (p *appsec) UpdateAdvancedSettingsPIILearning(ctx context.Context, params U
 	}
 
 	var result AdvancedSettingsPIILearningResponse
-	resp, err := p.Exec(req, &result, struct {
+	type requestBody struct {
 		EnablePIILearning bool `json:"enablePiiLearning"`
-	}{
-		EnablePIILearning: params.EnablePIILearning})
+	}
+	resp, err := p.Exec(req, &result, requestBody{
+		EnablePIILearning: params.EnablePIILearning,
+	})
 	if err != nil {
 		return nil, fmt.Errorf("%w: %s", ErrAPICallFailure, err.Error())
 	}

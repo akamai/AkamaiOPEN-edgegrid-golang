@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -27,8 +27,8 @@ type (
 
 	// GetPenaltyBoxRequest is used to retrieve the penalty box settings.
 	GetPenaltyBoxRequest struct {
-		ConfigID             int    `json:"-"`
-		Version              int    `json:"-"`
+		ConfigID             int64  `json:"-"`
+		Version              int64  `json:"-"`
 		PolicyID             string `json:"-"`
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`
@@ -42,8 +42,8 @@ type (
 
 	// UpdatePenaltyBoxRequest is used to modify the penalty box settings.
 	UpdatePenaltyBoxRequest struct {
-		ConfigID             int    `json:"-"`
-		Version              int    `json:"-"`
+		ConfigID             int64  `json:"-"`
+		Version              int64  `json:"-"`
 		PolicyID             string `json:"-"`
 		Action               string `json:"action"`
 		PenaltyBoxProtection bool   `json:"penaltyBoxProtection"`

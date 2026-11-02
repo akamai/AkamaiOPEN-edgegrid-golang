@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -21,25 +21,29 @@ type (
 
 	// GetSelectableHostnamesRequest is used to retrieve the selectable hostnames for a configuration.
 	GetSelectableHostnamesRequest struct {
-		ConfigID   int    `json:"configId"`
-		Version    int    `json:"version"`
+		ConfigID   int64  `json:"configId"`
+		Version    int64  `json:"version"`
 		ContractID string `json:"-"`
 		GroupID    int    `json:"-"`
 	}
 
 	// GetSelectableHostnamesResponse is returned from a call to GetSelectableHostnames.
 	GetSelectableHostnamesResponse struct {
-		AvailableSet []struct {
-			ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
-			ActiveInStaging        bool   `json:"activeInStaging,omitempty"`
-			ArlInclusion           bool   `json:"arlInclusion,omitempty"`
-			Hostname               string `json:"hostname,omitempty"`
-			ConfigIDInProduction   int    `json:"configIdInProduction,omitempty"`
-			ConfigNameInProduction string `json:"configNameInProduction,omitempty"`
-		} `json:"availableSet,omitempty"`
-		ConfigID                int  `json:"configId,omitempty"`
-		ConfigVersion           int  `json:"configVersion,omitempty"`
-		ProtectARLInclusionHost bool `json:"protectARLInclusionHost,omitempty"`
+		ConfigID                int64 `json:"configId,omitempty"`
+		ConfigVersion           int64 `json:"configVersion,omitempty"`
+		ProtectARLInclusionHost bool  `json:"protectARLInclusionHost,omitempty"`
+
+		AvailableSet []GetSelectableHostnamesResponseAvailableSetItem `json:"availableSet,omitempty"`
+	}
+
+	// GetSelectableHostnamesResponseAvailableSetItem describes an available hostname item.
+	GetSelectableHostnamesResponseAvailableSetItem struct {
+		ActiveInProduction     bool   `json:"activeInProduction,omitempty"`
+		ActiveInStaging        bool   `json:"activeInStaging,omitempty"`
+		ArlInclusion           bool   `json:"arlInclusion,omitempty"`
+		Hostname               string `json:"hostname,omitempty"`
+		ConfigIDInProduction   int    `json:"configIdInProduction,omitempty"`
+		ConfigNameInProduction string `json:"configNameInProduction,omitempty"`
 	}
 )
 

@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -25,8 +26,7 @@ func (e *edgeworkers) ListContracts(ctx context.Context) (*ListContractsResponse
 	logger := e.Log(ctx)
 	logger.Debug("ListContracts")
 
-	uri := "/edgeworkers/v1/contracts"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/contracts").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListContracts, err)
 	}

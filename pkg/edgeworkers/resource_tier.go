@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -71,16 +71,9 @@ func (e *edgeworkers) ListResourceTiers(ctx context.Context, params ListResource
 		return nil, fmt.Errorf("%s: %w: %s", ErrListResourceTiers, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/edgeworkers/v1/resource-tiers")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListResourceTiers, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/resource-tiers").
+		AddQueryParam("contractId", params.ContractID).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListResourceTiers, err)
 	}
@@ -107,9 +100,7 @@ func (e *edgeworkers) GetResourceTier(ctx context.Context, params GetResourceTie
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetResourceTier, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/resource-tier", params.EdgeWorkerID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/resource-tier", params.EdgeWorkerID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetResourceTier, err)
 	}

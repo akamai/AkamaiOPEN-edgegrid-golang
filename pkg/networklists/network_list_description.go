@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -19,43 +19,17 @@ type (
 
 	// GetNetworkListDescriptionResponse contains response from GetNetworkListDescription method
 	GetNetworkListDescriptionResponse struct {
-		Name            string   `json:"name"`
-		UniqueID        string   `json:"uniqueId"`
-		Description     string   `json:"description"`
-		SyncPoint       int      `json:"syncPoint"`
-		Type            string   `json:"type"`
-		NetworkListType string   `json:"networkListType"`
-		ElementCount    int      `json:"elementCount"`
-		ReadOnly        bool     `json:"readOnly"`
-		Shared          bool     `json:"shared"`
-		List            []string `json:"list"`
-		Links           struct {
-			ActivateInProduction struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInProduction"`
-			ActivateInStaging struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInStaging"`
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-		} `json:"links"`
+		Name            string           `json:"name"`
+		UniqueID        string           `json:"uniqueId"`
+		Description     string           `json:"description"`
+		SyncPoint       int              `json:"syncPoint"`
+		Type            string           `json:"type"`
+		NetworkListType string           `json:"networkListType"`
+		ElementCount    int              `json:"elementCount"`
+		ReadOnly        bool             `json:"readOnly"`
+		Shared          bool             `json:"shared"`
+		List            []string         `json:"list"`
+		Links           NetworkListLinks `json:"links"`
 	}
 
 	// UpdateNetworkListDescriptionRequest contains request parameters for UpdateNetworkListDescription method

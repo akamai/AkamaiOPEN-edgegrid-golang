@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,8 +26,8 @@ type (
 
 	// GetIPGeoRequest is used to retrieve the network lists used in IP/Geo firewall settings.
 	GetIPGeoRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
@@ -60,8 +60,8 @@ type (
 
 	// UpdateIPGeoRequest is used to update the method and which network lists are used for IP/Geo firewall blocking.
 	UpdateIPGeoRequest struct {
-		ConfigID           int                `json:"-"`
-		Version            int                `json:"-"`
+		ConfigID           int64              `json:"-"`
+		Version            int64              `json:"-"`
 		PolicyID           string             `json:"-"`
 		Block              string             `json:"block"`
 		BlockAllAction     string             `json:"blockAllAction,omitempty"`

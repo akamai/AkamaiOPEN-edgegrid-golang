@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -32,58 +32,45 @@ type (
 
 	// GetSecurityPolicyClonesRequest is used to retrieve the available security policies.
 	GetSecurityPolicyClonesRequest struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID int64 `json:"configId"`
+		Version  int64 `json:"version"`
 	}
 
 	// GetSecurityPolicyClonesResponse is returned from a call to GetSecurityPolicyClones.
 	GetSecurityPolicyClonesResponse struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
-		Policies []struct {
-			PolicyID                string `json:"policyId"`
-			PolicyName              string `json:"policyName"`
-			HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
-			PolicySecurityControls  struct {
-				ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-				ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-				ApplyRateControls             bool `json:"applyRateControls"`
-				ApplyReputationControls       bool `json:"applyReputationControls"`
-				ApplyBotmanControls           bool `json:"applyBotmanControls"`
-				ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-				ApplySlowPostControls         bool `json:"applySlowPostControls"`
-			} `json:"policySecurityControls"`
-		} `json:"policies"`
+		ConfigID int64                                         `json:"configId"`
+		Version  int64                                         `json:"version"`
+		Policies []GetSecurityPolicyClonesResponsePoliciesItem `json:"policies"`
+	}
+
+	// GetSecurityPolicyClonesResponsePoliciesItem represents an individual policy item in GetSecurityPolicyClonesResponse.
+	GetSecurityPolicyClonesResponsePoliciesItem struct {
+		PolicyID                string                 `json:"policyId"`
+		PolicyName              string                 `json:"policyName"`
+		HasRatePolicyWithAPIKey bool                   `json:"hasRatePolicyWithApiKey"`
+		PolicySecurityControls  PolicySecurityControls `json:"policySecurityControls"`
 	}
 
 	// GetSecurityPolicyCloneRequest is used to retrieve a security policy.
 	GetSecurityPolicyCloneRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
 	// GetSecurityPolicyCloneResponse is returned from a call to GetSecurityPolicyClone.
 	GetSecurityPolicyCloneResponse struct {
-		ConfigID               int    `json:"configId,omitempty"`
-		PolicyID               string `json:"policyId,omitempty"`
-		PolicyName             string `json:"policyName,omitempty"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints,omitempty"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls,omitempty"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls,omitempty"`
-			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-			ApplyReputationControls       bool `json:"applyReputationControls,omitempty"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-		} `json:"policySecurityControls,omitempty"`
-		Version int `json:"version,omitempty"`
+		ConfigID               int64                  `json:"configId,omitempty"`
+		PolicyID               string                 `json:"policyId,omitempty"`
+		PolicyName             string                 `json:"policyName,omitempty"`
+		PolicySecurityControls PolicySecurityControls `json:"policySecurityControls,omitempty"`
+		Version                int64                  `json:"version,omitempty"`
 	}
 
 	// CreateSecurityPolicyCloneRequest is used to clone a security policy.
 	CreateSecurityPolicyCloneRequest struct {
-		ConfigID                 int    `json:"configId"`
-		Version                  int    `json:"version"`
+		ConfigID                 int64  `json:"configId"`
+		Version                  int64  `json:"version"`
 		CreateFromSecurityPolicy string `json:"createFromSecurityPolicy"`
 		PolicyName               string `json:"policyName"`
 		PolicyPrefix             string `json:"policyPrefix"`
@@ -94,39 +81,18 @@ type (
 		HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
 		PolicyID                string `json:"policyId"`
 		PolicyName              string `json:"policyName"`
-		PolicySecurityControls  struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		}
+		PolicySecurityControls  PolicySecurityControls
 	}
 
 	// SecurityPolicyCloneResponse is currently unused.
 	SecurityPolicyCloneResponse struct {
-		ConfigID int        `json:"configId"`
+		ConfigID int64      `json:"configId"`
 		Policies []Policies `json:"policies"`
-		Version  int        `json:"version"`
+		Version  int64      `json:"version"`
 	}
 
 	// Policies is used as part of a description of available security policies.
-	Policies struct {
-		HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
-		PolicyID                string `json:"policyId"`
-		PolicyName              string `json:"policyName"`
-		PolicySecurityControls  struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		}
-	}
+	Policies CreateSecurityPolicyCloneResponse
 
 	// CreateSecurityPolicyClonePost is currently unused.
 	CreateSecurityPolicyClonePost struct {
@@ -137,19 +103,22 @@ type (
 
 	// CreateSecurityPolicyClonePostResponse is currently unused.
 	CreateSecurityPolicyClonePostResponse struct {
-		ConfigID               int    `json:"configId"`
-		PolicyID               string `json:"policyId"`
-		PolicyName             string `json:"policyName"`
-		PolicySecurityControls struct {
-			ApplyAPIConstraints           bool `json:"applyApiConstraints"`
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
-			ApplyBotmanControls           bool `json:"applyBotmanControls"`
-			ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
-			ApplyRateControls             bool `json:"applyRateControls"`
-			ApplyReputationControls       bool `json:"applyReputationControls"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls"`
-		} `json:"policySecurityControls"`
-		Version int `json:"version"`
+		ConfigID               int64                  `json:"configId"`
+		PolicyID               string                 `json:"policyId"`
+		PolicyName             string                 `json:"policyName"`
+		PolicySecurityControls PolicySecurityControls `json:"policySecurityControls"`
+		Version                int64                  `json:"version"`
+	}
+
+	// PolicySecurityControls represents the security controls for a policy clone.
+	PolicySecurityControls struct {
+		ApplyAPIConstraints           bool `json:"applyApiConstraints"`
+		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls"`
+		ApplyBotmanControls           bool `json:"applyBotmanControls"`
+		ApplyNetworkLayerControls     bool `json:"applyNetworkLayerControls"`
+		ApplyRateControls             bool `json:"applyRateControls"`
+		ApplyReputationControls       bool `json:"applyReputationControls"`
+		ApplySlowPostControls         bool `json:"applySlowPostControls"`
 	}
 )
 

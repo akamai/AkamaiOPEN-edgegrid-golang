@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -32,25 +32,28 @@ type (
 
 	// GetEvalRulesRequest is used to retrieve the rules available for evaluation and their actions.
 	GetEvalRulesRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 	}
 
 	// GetEvalRulesResponse is returned from a call to GetEvalRules.
 	GetEvalRulesResponse struct {
-		Rules []struct {
-			ID                 int                     `json:"id,omitempty"`
-			Action             string                  `json:"action,omitempty"`
-			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-		} `json:"evalRuleActions,omitempty"`
+		Rules []GetEvalRulesResponseRule `json:"evalRuleActions,omitempty"`
+	}
+
+	// GetEvalRulesResponseRule describes an individual rule item returned in GetEvalRulesResponse.
+	GetEvalRulesResponseRule struct {
+		ID                 int                     `json:"id,omitempty"`
+		Action             string                  `json:"action,omitempty"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
 	// GetEvalRuleRequest is used to retrieve a rule available for evaluation and its action.
 	GetEvalRuleRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"ruleId"`
 	}
@@ -63,8 +66,8 @@ type (
 
 	// UpdateEvalRuleRequest is used to modify a rule available for evaluation and its action.
 	UpdateEvalRuleRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		RuleID         int             `json:"-"`
 		Action         string          `json:"action"`
@@ -72,10 +75,7 @@ type (
 	}
 
 	// UpdateEvalRuleResponse is returned from a call to UpdateEvalRule.
-	UpdateEvalRuleResponse struct {
-		Action             string                  `json:"action,omitempty"`
-		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-	}
+	UpdateEvalRuleResponse GetEvalRuleResponse
 )
 
 // IsEmptyConditionException checks whether the ConditionException field is empty.

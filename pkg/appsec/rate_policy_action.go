@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,8 +26,8 @@ type (
 
 	// GetRatePolicyActionsRequest is used to retrieve a configuration's rate policies and their associated actions.
 	GetRatePolicyActionsRequest struct {
-		ConfigID     int    `json:"configId"`
-		Version      int    `json:"version"`
+		ConfigID     int64  `json:"configId"`
+		Version      int64  `json:"version"`
 		PolicyID     string `json:"policyId"`
 		RatePolicyID int    `json:"id"`
 		Ipv4Action   string `json:"ipv4Action"`
@@ -36,17 +36,20 @@ type (
 
 	// GetRatePolicyActionsResponse is returned from a call to GetRatePolicyActions.
 	GetRatePolicyActionsResponse struct {
-		RatePolicyActions []struct {
-			ID         int    `json:"id"`
-			Ipv4Action string `json:"ipv4Action,omitempty"`
-			Ipv6Action string `json:"ipv6Action,omitempty"`
-		} `json:"ratePolicyActions,omitempty"`
+		RatePolicyActions []GetRatePolicyActionsResponseRatePolicyAction `json:"ratePolicyActions,omitempty"`
+	}
+
+	// GetRatePolicyActionsResponseRatePolicyAction describes a rate policy action item returned in GetRatePolicyActionsResponse.
+	GetRatePolicyActionsResponseRatePolicyAction struct {
+		ID         int    `json:"id"`
+		Ipv4Action string `json:"ipv4Action,omitempty"`
+		Ipv6Action string `json:"ipv6Action,omitempty"`
 	}
 
 	// UpdateRatePolicyActionRequest is used to update the actions for a rate policy.
 	UpdateRatePolicyActionRequest struct {
-		ConfigID     int    `json:"-"`
-		Version      int    `json:"-"`
+		ConfigID     int64  `json:"-"`
+		Version      int64  `json:"-"`
 		PolicyID     string `json:"-"`
 		RatePolicyID int    `json:"-"`
 		Ipv4Action   string `json:"ipv4Action"`

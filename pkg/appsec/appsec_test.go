@@ -12,11 +12,17 @@ import (
 	"os"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegrid"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegrid"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
+
+func newMockAPIClient(t *testing.T, handler http.HandlerFunc) APPSEC {
+	server := httptest.NewTLSServer(handler)
+	t.Cleanup(server.Close)
+	return mockAPIClient(t, server)
+}
 
 func mockAPIClient(t *testing.T, mockServer *httptest.Server) APPSEC {
 	serverURL, err := url.Parse(mockServer.URL)

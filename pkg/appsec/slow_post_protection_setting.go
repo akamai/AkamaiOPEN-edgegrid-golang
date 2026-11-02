@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -25,8 +25,8 @@ type (
 
 	// GetSlowPostProtectionSettingsRequest is used to retrieve the slow post protection settings for a configuration.
 	GetSlowPostProtectionSettingsRequest struct {
-		ConfigID          int                                         `json:"configId"`
-		Version           int                                         `json:"version"`
+		ConfigID          int64                                       `json:"configId"`
+		Version           int64                                       `json:"version"`
 		PolicyID          string                                      `json:"policyId"`
 		Action            string                                      `json:"action"`
 		SlowRateThreshold *SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold,omitempty"`
@@ -42,29 +42,19 @@ type (
 
 	// UpdateSlowPostProtectionSettingRequest is used to modify the slow post protection settings for a configuration.
 	UpdateSlowPostProtectionSettingRequest struct {
-		ConfigID          int    `json:"configId"`
-		Version           int    `json:"version"`
-		PolicyID          string `json:"policyId"`
-		Action            string `json:"action"`
-		SlowRateThreshold struct {
-			Rate   int `json:"rate"`
-			Period int `json:"period"`
-		} `json:"slowRateThreshold"`
-		DurationThreshold struct {
-			Timeout int `json:"timeout"`
-		} `json:"durationThreshold"`
+		ConfigID          int64                                      `json:"configId"`
+		Version           int64                                      `json:"version"`
+		PolicyID          string                                     `json:"policyId"`
+		Action            string                                     `json:"action"`
+		SlowRateThreshold SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold"`
+		DurationThreshold SlowPostProtectionSettingDurationThreshold `json:"durationThreshold"`
 	}
 
 	// UpdateSlowPostProtectionSettingResponse is returned from a call to UpdateSlowPostProtection.
 	UpdateSlowPostProtectionSettingResponse struct {
-		Action            string `json:"action"`
-		SlowRateThreshold struct {
-			Rate   int `json:"rate"`
-			Period int `json:"period"`
-		} `json:"slowRateThreshold"`
-		DurationThreshold struct {
-			Timeout int `json:"timeout"`
-		} `json:"durationThreshold"`
+		Action            string                                     `json:"action"`
+		SlowRateThreshold SlowPostProtectionSettingSlowRateThreshold `json:"slowRateThreshold"`
+		DurationThreshold SlowPostProtectionSettingDurationThreshold `json:"durationThreshold"`
 	}
 
 	// SlowPostProtectionSettingSlowRateThreshold describes the average rate in bytes per second over a specified period of time before an action

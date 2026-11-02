@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,43 +26,46 @@ type (
 
 	// GetConfigurationVersionsRequest is used to retrieve the versions of a security configuration.
 	GetConfigurationVersionsRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
 	}
 
 	// GetConfigurationVersionsResponse is returned from a call to GetConfigurationVersions.
 	GetConfigurationVersionsResponse struct {
-		ConfigID           int    `json:"configId,omitempty"`
-		ConfigName         string `json:"configName,omitempty"`
-		LastCreatedVersion int    `json:"lastCreatedVersion,omitempty"`
-		Page               int    `json:"page,omitempty"`
-		PageSize           int    `json:"pageSize,omitempty"`
-		TotalSize          int    `json:"totalSize,omitempty"`
-		VersionList        []struct {
-			ConfigID   int               `json:"configId,omitempty"`
-			Production EnvironmentStatus `json:"production,omitempty"`
-			Staging    EnvironmentStatus `json:"staging,omitempty"`
-			Version    int               `json:"version,omitempty"`
-			BasedOn    int               `json:"basedOn,omitempty"`
-		} `json:"versionList,omitempty"`
+		ConfigID           int64                                             `json:"configId,omitempty"`
+		ConfigName         string                                            `json:"configName,omitempty"`
+		LastCreatedVersion int                                               `json:"lastCreatedVersion,omitempty"`
+		Page               int                                               `json:"page,omitempty"`
+		PageSize           int                                               `json:"pageSize,omitempty"`
+		TotalSize          int                                               `json:"totalSize,omitempty"`
+		VersionList        []GetConfigurationVersionsResponseVersionListItem `json:"versionList,omitempty"`
+	}
+
+	// GetConfigurationVersionsResponseVersionListItem represents an individual version item in the version list.
+	GetConfigurationVersionsResponseVersionListItem struct {
+		ConfigID   int64             `json:"configId,omitempty"`
+		Production EnvironmentStatus `json:"production,omitempty"`
+		Staging    EnvironmentStatus `json:"staging,omitempty"`
+		Version    int64             `json:"version,omitempty"`
+		BasedOn    int               `json:"basedOn,omitempty"`
 	}
 
 	// GetConfigurationVersionRequest is used to retrieve information about a specific configuration version.
 	GetConfigurationVersionRequest struct {
-		ConfigID int `json:"configId"`
-		Version  int `json:"version"`
+		ConfigID int64 `json:"configId"`
+		Version  int64 `json:"version"`
 	}
 
 	// GetConfigurationVersionResponse is returned from a call to GetConfigurationVersion.
 	GetConfigurationVersionResponse struct {
 		BasedOn      int               `json:"basedOn,omitempty"`
-		ConfigID     int               `json:"configId,omitempty"`
+		ConfigID     int64             `json:"configId,omitempty"`
 		ConfigName   string            `json:"configName,omitempty"`
 		CreateDate   time.Time         `json:"createDate,omitempty"`
 		CreatedBy    string            `json:"createdBy,omitempty"`
 		Production   EnvironmentStatus `json:"production,omitempty"`
 		Staging      EnvironmentStatus `json:"staging,omitempty"`
-		Version      int               `json:"version,omitempty"`
+		Version      int64             `json:"version,omitempty"`
 		VersionNotes string            `json:"versionNotes,omitempty"`
 	}
 

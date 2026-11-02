@@ -1,5 +1,108 @@
 # RELEASE NOTES
 
+## 15.0.0 (Nov 2, 2026)
+
+### BREAKING CHANGES:
+
+* Appsec
+  * Dropped from `UpdateReputationProfileResponse` never populated fields: `policyId`, `configId`, `configVersion`, `matchType`, `type`, `averageThreshold`, `burstThreshold`, `clientIdentifier`, `useXForwardForHeaders`, `requestType`, `sameActionOnIpv6`, `path`, `pathMatchType`, `pathUriPositiveMatch`, `fileExtensions`, `hostNames`, `additionalMatchOptions`, `queryParameters`, `createDate`, `updateDate`, `used`.
+  * Dropped `ReputationProfileResponsePath` and `QueryParameter` structs.
+  * Refactored the request and response structures to use named types instead of inline anonymous structures.
+  * Changed `ConfigID` and `ConfigVersion` field types from `int` to `int64` in all appsec request and response structs to align with API integer precision requirements.
+  * Renamed `ReputationProfileId` to `ReputationProfileID` and changed its type from `int` to `int64` in `GetReputationProfileRequest`, `GetReputationProfilesRequest`, `UpdateReputationProfileRequest`, and `RemoveReputationProfileRequest`.
+  * Changed `ID` field type from `int` to `int64` in `GetReputationProfilesResponseReputationProfile`.
+
+* HAPI
+  * Renamed the `GetChangeRequest` request struct to `GetChangeRequestRequest` and changed the `GetChangeRequest` method's return type from `*ChangeRequest` to `*GetChangeRequestResponse`.
+  * Changed the `GetEdgeHostname` method to accept the `GetEdgeHostnameRequest` struct instead of an integer ID, with an `int64` `EdgeHostnameID` field and optional `IncludeDeliveryPolicy` support.
+  * Renamed the `EdgeHostname.ProductId` field to `ProductID` and the `GetEdgeHostnameResponse.ChinaCdn` field to `ChinaCDN`.
+  * Changed the `Error.Status` field from `int` to `int64` and the `Error.RequestTime` field from `string` to `time.Time`.
+  * Changed the following integer fields from `int` to `int64`:
+    * The `ChangeID` field in the `GetChangeRequestRequest`, `DeleteEdgeHostnameResponse`, and `UpdateEdgeHostnameResponse` structs.
+    * The `EdgeHostnameID`, `TTL` and `SerialNumber` fields in the `EdgeHostname` and `GetEdgeHostnameResponse` structs.
+  * Changed the `StatusUpdateDate` and `SubmitDate` fields from `string` to `time.Time` in the `DeleteEdgeHostnameResponse`, `UpdateEdgeHostnameResponse`, and `GetChangeRequestResponse` structs.
+  * Added required-ID validation to the `GetEdgeHostnameRequest` and `GetChangeRequestRequest` structs.
+  * Changed the following fields to pointers:
+    * The `SlotNumber` (from `int` to `*int64`), `CustomTarget`, `MapAlias`, and `IsEdgeIPBindingEnabled` fields in the `EdgeHostname`, `GetEdgeHostnameResponse`, `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
+    * The `CustomChinaCDNMap` field in the `ChinaCDN` struct.
+    * The `StatusUpdateEmail` field in the `GetChangeRequestResponse`, `UpdateEdgeHostnameResponse`, and `DeleteEdgeHostnameResponse` structs.
+
+* IAM
+  * Changed the `SecondaryEmail` field in the `UserBasicInfo` structure from `string` to `*string` to distinguish an omitted value from an explicitly cleared one ([I#699](https://github.com/akamai/terraform-provider-akamai/issues/699)).
+
+* mTLS Keystore
+  * [`ListClientCertificates`](https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-certs) was updated to accept `ListClientCertificatesRequest`.
+  * Changed the type of `ListClientCertificatesResponse.Certificates` from `Certificate` to `ListClientCertificatesResponseItem`. `ListClientCertificatesResponseItem` embedds `Certificate`.
+
+* Networklists
+  * Refactored the request and response structures to use named types instead of inline anonymous structures.
+
+* PAPI
+  * Changed the `Options` field in `GetEdgeHostnames` and `GetEdgeHostname` requests from `[]string` to `string`.
+  * Removed the `Options` field from `CreateEdgeHostnameRequest`.
+
+### FEATURES/ENHANCEMENTS:
+
+* General
+  * Updated various dependencies.
+
+* Appsec
+  * (Beta) Added Client-Side Protection Rules API:
+    * `CreateClientSideProtectionRule`
+    * `ListClientSideProtectionRules`
+    * `UpdateClientSideProtectionRule`
+    * `DeleteClientSideProtectionRule`
+  * (Beta) Added Clientside Protection Configuration API:
+    * `GetClientsideProtectionConfiguration`
+    * `UpdateClientsideProtectionConfiguration`
+  * Added to `UpdateReputationProfileResponse` the following fields: `context`, `threshold`, `sharedIpHandling`, `condition`, `enabled`.
+
+* Cloud Certificates (Beta)
+  * Replaced the `ErrorTypes` string field on `GetActivationStatusResponse` (also returned via `ListActivationsResponse.Items`)
+    with an `Errors` field of the new `ActivationError` type, to surface structured error details.
+  * Removed the `CertificateStatusCertUploadProcessing` and `ActivityEventTypeLineageDeleted` constants, as well as the
+    `ErrCSRExpired`, `ErrCertSANMismatch`, `ErrHeadDeployedOnNetwork`, and `ErrCertSubjectMismatch` error variables, none of which are returned by the API.
+  * Removed the `TotalHostnameCount` and `InProgressHostnameCount` fields from the `GetActivationStatusResponse` structure, as they are no longer returned by the API.
+  * Added the `GeoClassContiguousUS` and `GeoClassReservedGlobal` values for the `GeoClass`. Both require `SecureNetwork` to be `ENHANCED_TLS`.
+  * The `/error-types/single-generation-no-complete` error is now matched by the new `ErrSingleGenerationNoComplete` error variable.
+  * `UploadSignedCertificate` no longer sends a custom vendor `Accept` header; the API now rejects it (406) and only accepts the session's default `application/json`.
+
+* EdgeWorkers
+  * Added `ActiveOnNetwork` and `Network` filters to the `ListActivationsRequest`.
+
+* HAPI
+  * Added the following methods:
+    * [`ListChangeRequests`](https://techdocs.akamai.com/edge-hostnames/reference/get-change-requests) - Lists pending change requests.
+    * [`ListChangeRequestsPerEdgeHostname`](https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostname-change-requests) - Lists all change requests for the specified edge hostname.
+  * Added the optional `IncludeDeliveryPolicy` field to the `GetChangeRequestRequest` struct.
+  * Added the `OptimizationStatus` field to the `GetChangeRequestResponse` and `UpdateEdgeHostnameResponse` structs.
+  * Added the `DeliveryPolicy` and `DNSSerial` fields to the `EdgeHostname` and `GetEdgeHostnameResponse` structs. These fields are also available in the nested `EdgeHostnames` entries in the following response structures:
+    * `GetChangeRequestResponse`
+    * `ListChangeRequestsResponse`
+    * `ListChangeRequestsPerEdgeHostnameResponse`
+    * `UpdateEdgeHostnameResponse`
+    * `DeleteEdgeHostnameResponse`
+  * Added the `ChinaPartner` and `GTMDomain` fields to the `ChinaCDN` struct.
+  * Added the `ChangeID` and `ExtensionFields` fields to the `Error` struct.
+  * Added the following constants for change request status and optimization status:
+    * `ChangeRequestStatusSucceeded`
+    * `ChangeRequestStatusFailed`
+    * `ChangeRequestStatusIgnored`
+    * `ChangeRequestOptimizationStatusProcessing`
+    * `ChangeRequestOptimizationStatusProcessed`
+    * `ChangeRequestOptimizationStatusRejected`
+    * `ChangeRequestOptimizationStatusRetryFailed`
+    * `ChangeRequestOptimizationStatusIgnored`
+
+* PAPI
+  * Added the `DeliveryPolicy` field and map detail fields (`MapDetailsSerialNumber`, `MapDetailsSlotNumber`, and `MapDetailsMapDomain`) to responses from `GetEdgeHostnames` and `GetEdgeHostname`. The map detail fields are returned when the request's `Options` value is `mapDetails`.
+
+### BUG FIXES:
+
+* Appsec
+  * Fixed `GetRatePolicyResponse.ID` and `GetReputationProfileResponse.ID` incorrectly tagged with `json:"-"`, causing the `ID` field to always deserialize as `0` even when the API response includes it.
+  * Fixed `GetMatchTargetResponse.Sequence`, `CreateMatchTargetResponse.Sequence`, `UpdateMatchTargetResponse.Sequence`, and `GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem.Sequence` incorrectly tagged with `json:"-"`, causing the `Sequence` field to always deserialize as `0` even when the API response includes it.
+
 ## 14.1.0 (Sep 28, 2026)
 
 ### FEATURES/ENHANCEMENTS:

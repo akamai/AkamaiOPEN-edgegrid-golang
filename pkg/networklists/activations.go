@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,76 +26,25 @@ type (
 
 	// GetActivationsResponse contains response with activation status
 	GetActivationsResponse struct {
-		ActivationID       int    `json:"activationId"`
-		ActivationComments string `json:"activationComments"`
-		ActivationStatus   string `json:"activationStatus"`
-		SyncPoint          int    `json:"syncPoint"`
-		UniqueID           string `json:"uniqueId"`
-		Fast               bool   `json:"fast"`
-		DispatchCount      int    `json:"dispatchCount"`
-		Links              struct {
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			SyncPointHistory struct {
-				Href string `json:"href"`
-			} `json:"syncPointHistory"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-			ActivationDetails struct {
-				Href string `json:"href"`
-			} `json:"activationDetails"`
-		} `json:"links"`
+		ActivationID       int             `json:"activationId"`
+		ActivationComments string          `json:"activationComments"`
+		ActivationStatus   string          `json:"activationStatus"`
+		SyncPoint          int             `json:"syncPoint"`
+		UniqueID           string          `json:"uniqueId"`
+		Fast               bool            `json:"fast"`
+		DispatchCount      int             `json:"dispatchCount"`
+		Links              ActivationLinks `json:"links"`
 	}
 
 	// GetActivationResponse contains response with activation details
 	GetActivationResponse struct {
-		ActivationID     int       `json:"activationId"`
-		CreateDate       time.Time `json:"createDate"`
-		CreatedBy        string    `json:"createdBy"`
-		Environment      string    `json:"environment"`
-		Fast             bool      `json:"fast"`
-		ActivationStatus string    `json:"status"`
-		NetworkList      struct {
-			ActivationComments string `json:"activationComments"`
-			ActivationStatus   string `json:"activationStatus"`
-			Links              struct {
-				AppendItems struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"appendItems"`
-				Retrieve struct {
-					Href string `json:"href"`
-				} `json:"retrieve"`
-				StatusInProduction struct {
-					Href string `json:"href"`
-				} `json:"statusInProduction"`
-				StatusInStaging struct {
-					Href string `json:"href"`
-				} `json:"statusInStaging"`
-				SyncPointHistory struct {
-					Href string `json:"href"`
-				} `json:"syncPointHistory"`
-				Update struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"update"`
-			} `json:"links"`
-			SyncPoint int    `json:"syncPoint"`
-			UniqueID  string `json:"uniqueId"`
-		} `json:"networkList"`
+		ActivationID     int                   `json:"activationId"`
+		CreateDate       time.Time             `json:"createDate"`
+		CreatedBy        string                `json:"createdBy"`
+		Environment      string                `json:"environment"`
+		Fast             bool                  `json:"fast"`
+		ActivationStatus string                `json:"status"`
+		NetworkList      ActivationNetworkList `json:"networkList"`
 	}
 
 	// CreateActivationsRequest contains request parameters for creating new activation
@@ -109,38 +58,14 @@ type (
 
 	// CreateActivationsResponse contains response after creating new activation
 	CreateActivationsResponse struct {
-		ActivationID       int    `json:"activationId"`
-		ActivationComments string `json:"activationComments"`
-		ActivationStatus   string `json:"activationStatus"`
-		SyncPoint          int    `json:"syncPoint"`
-		UniqueID           string `json:"uniqueId"`
-		Fast               bool   `json:"fast"`
-		DispatchCount      int    `json:"dispatchCount"`
-		Links              struct {
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			SyncPointHistory struct {
-				Href string `json:"href"`
-			} `json:"syncPointHistory"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-			ActivationDetails struct {
-				Href string `json:"href"`
-			} `json:"activationDetails"`
-		} `json:"links"`
+		ActivationID       int             `json:"activationId"`
+		ActivationComments string          `json:"activationComments"`
+		ActivationStatus   string          `json:"activationStatus"`
+		SyncPoint          int             `json:"syncPoint"`
+		UniqueID           string          `json:"uniqueId"`
+		Fast               bool            `json:"fast"`
+		DispatchCount      int             `json:"dispatchCount"`
+		Links              ActivationLinks `json:"links"`
 	}
 
 	// RemoveActivationsRequest contains request parameters of Activation to deactivate
@@ -155,38 +80,55 @@ type (
 
 	// RemoveActivationsResponse contains response of Activation deactivation
 	RemoveActivationsResponse struct {
-		ActivationID       int    `json:"activationId"`
-		ActivationComments string `json:"activationComments"`
-		ActivationStatus   string `json:"activationStatus"`
-		SyncPoint          int    `json:"syncPoint"`
-		UniqueID           string `json:"uniqueId"`
-		Fast               bool   `json:"fast"`
-		DispatchCount      int    `json:"dispatchCount"`
-		Links              struct {
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			SyncPointHistory struct {
-				Href string `json:"href"`
-			} `json:"syncPointHistory"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-			ActivationDetails struct {
-				Href string `json:"href"`
-			} `json:"activationDetails"`
-		} `json:"links"`
+		ActivationID       int             `json:"activationId"`
+		ActivationComments string          `json:"activationComments"`
+		ActivationStatus   string          `json:"activationStatus"`
+		SyncPoint          int             `json:"syncPoint"`
+		UniqueID           string          `json:"uniqueId"`
+		Fast               bool            `json:"fast"`
+		DispatchCount      int             `json:"dispatchCount"`
+		Links              ActivationLinks `json:"links"`
+	}
+
+	// ActivationLinks contains hypermedia links for activation responses.
+	ActivationLinks struct {
+		AppendItems        ActivationActionLink `json:"appendItems"`
+		Retrieve           ActivationLink       `json:"retrieve"`
+		StatusInProduction ActivationLink       `json:"statusInProduction"`
+		StatusInStaging    ActivationLink       `json:"statusInStaging"`
+		SyncPointHistory   ActivationLink       `json:"syncPointHistory"`
+		Update             ActivationActionLink `json:"update"`
+		ActivationDetails  ActivationLink       `json:"activationDetails"`
+	}
+
+	// ActivationNetworkList describes network list details in an activation response.
+	ActivationNetworkList struct {
+		ActivationComments string                     `json:"activationComments"`
+		ActivationStatus   string                     `json:"activationStatus"`
+		Links              ActivationNetworkListLinks `json:"links"`
+		SyncPoint          int                        `json:"syncPoint"`
+		UniqueID           string                     `json:"uniqueId"`
+	}
+
+	// ActivationNetworkListLinks contains hypermedia links for network list details.
+	ActivationNetworkListLinks struct {
+		AppendItems        ActivationActionLink `json:"appendItems"`
+		Retrieve           ActivationLink       `json:"retrieve"`
+		StatusInProduction ActivationLink       `json:"statusInProduction"`
+		StatusInStaging    ActivationLink       `json:"statusInStaging"`
+		SyncPointHistory   ActivationLink       `json:"syncPointHistory"`
+		Update             ActivationActionLink `json:"update"`
+	}
+
+	// ActivationActionLink describes a hypermedia link that includes an HTTP method.
+	ActivationActionLink struct {
+		Href   string `json:"href"`
+		Method string `json:"method"`
+	}
+
+	// ActivationLink describes a standard hypermedia reference.
+	ActivationLink struct {
+		Href string `json:"href"`
 	}
 
 	// ActivationValue is used to create an "enum" of possible Activation.ActivationType values

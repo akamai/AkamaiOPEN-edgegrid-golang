@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -36,8 +36,8 @@ type (
 
 	// GetAdvancedSettingsLoggingRequest is used to retrieve the HTTP header logging settings for a configuration or policy.
 	GetAdvancedSettingsLoggingRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 	}
 
@@ -70,34 +70,36 @@ type (
 
 	// UpdateAdvancedSettingsLoggingRequest is used to update the HTTP header logging settings for a configuration or policy.
 	UpdateAdvancedSettingsLoggingRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
+	// AdvancedSettingsLoggingHeader describes HTTP header or cookie logging configuration.
+	AdvancedSettingsLoggingHeader struct {
+		Type   string   `json:"type"`
+		Values []string `json:"values,omitempty"`
+	}
+
+	// RemoveAdvancedSettingsLoggingCookies describes the cookies configuration in RemoveAdvancedSettingsLoggingResponse.
+	RemoveAdvancedSettingsLoggingCookies struct {
+		Type string `json:"type"`
+	}
+
 	// UpdateAdvancedSettingsLoggingResponse is returned from a call to UpdateAdvancedSettingsLogging.
 	UpdateAdvancedSettingsLoggingResponse struct {
-		Override      bool `json:"override"`
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		Override        bool                          `json:"override"`
+		AllowSampling   bool                          `json:"allowSampling"`
+		Cookies         AdvancedSettingsLoggingHeader `json:"cookies"`
+		CustomHeaders   AdvancedSettingsLoggingHeader `json:"customHeaders"`
+		StandardHeaders AdvancedSettingsLoggingHeader `json:"standardHeaders"`
 	}
 
 	// RemoveAdvancedSettingsLoggingRequest is used to disable HTTP header logging for a configuration or policy.
 	RemoveAdvancedSettingsLoggingRequest struct {
-		ConfigID      int    `json:"-"`
-		Version       int    `json:"-"`
+		ConfigID      int64  `json:"-"`
+		Version       int64  `json:"-"`
 		PolicyID      string `json:"-"`
 		Override      bool   `json:"override"`
 		AllowSampling bool   `json:"allowSampling"`
@@ -105,19 +107,11 @@ type (
 
 	// RemoveAdvancedSettingsLoggingResponse is returned from a call to RemoveAdvancedSettingsLogging.
 	RemoveAdvancedSettingsLoggingResponse struct {
-		Override      bool `json:"override"`
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type string `json:"type"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		Override        bool                                 `json:"override"`
+		AllowSampling   bool                                 `json:"allowSampling"`
+		Cookies         RemoveAdvancedSettingsLoggingCookies `json:"cookies"`
+		CustomHeaders   AdvancedSettingsLoggingHeader        `json:"customHeaders"`
+		StandardHeaders AdvancedSettingsLoggingHeader        `json:"standardHeaders"`
 	}
 )
 

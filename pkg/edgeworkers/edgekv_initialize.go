@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 // EdgeKVInitialize is EdgeKV Initialize API interface
@@ -32,8 +33,7 @@ func (e *edgeworkers) InitializeEdgeKV(ctx context.Context) (*EdgeKVInitializati
 	logger := e.Log(ctx)
 	logger.Debug("InitializeEdgeKV")
 
-	uri := "/edgekv/v1/initialize"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	req, err := request.NewPut(ctx, "/edgekv/v1/initialize").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrInitializeEdgeKV, err)
 	}
@@ -56,8 +56,7 @@ func (e *edgeworkers) GetEdgeKVInitializationStatus(ctx context.Context) (*EdgeK
 	logger := e.Log(ctx)
 	logger.Debug("GetEdgeKVInitializationStatus")
 
-	uri := "/edgekv/v1/initialize"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/initialize").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeKVInitialize, err)
 	}

@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -46,7 +46,10 @@ type (
 	}
 
 	// AttackGroupConditions describes an attack group's condition information.
-	AttackGroupConditions []struct {
+	AttackGroupConditions []AttackGroupCondition
+
+	// AttackGroupCondition represents a single condition item.
+	AttackGroupCondition struct {
 		Type          string   `json:"type,omitempty"`
 		Extensions    []string `json:"extensions,omitempty"`
 		Filenames     []string `json:"filenames,omitempty"`
@@ -68,7 +71,10 @@ type (
 	}
 
 	// AttackGroupAdvancedCriteria describes the hostname and path criteria used to limit the scope of an exception.
-	AttackGroupAdvancedCriteria []struct {
+	AttackGroupAdvancedCriteria []AttackGroupAdvancedCriteriaItem
+
+	// AttackGroupAdvancedCriteriaItem represents a single criteria item in an advanced exception.
+	AttackGroupAdvancedCriteriaItem struct {
 		Hostnames []string `json:"hostnames,omitempty"`
 		Names     []string `json:"names,omitempty"`
 		Paths     []string `json:"paths,omitempty"`
@@ -76,19 +82,28 @@ type (
 	}
 
 	// AttackGroupSpecificHeaderCookieOrParamNameValAdvanced describes the excepted name-value pairs in a request.
-	AttackGroupSpecificHeaderCookieOrParamNameValAdvanced []struct {
-		Criteria    *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
-		NamesValues []struct {
-			Names  []string `json:"names"`
-			Values []string `json:"values"`
-		} `json:"namesValues"`
-		Selector      string `json:"selector"`
-		ValueWildcard bool   `json:"valueWildcard"`
-		Wildcard      bool   `json:"wildcard"`
+	AttackGroupSpecificHeaderCookieOrParamNameValAdvanced []AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItem
+
+	// AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItem describes a single advanced name-value exception item.
+	AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItem struct {
+		Criteria      *AttackGroupAdvancedCriteria                                               `json:"criteria,omitempty"`
+		NamesValues   []AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItemNamesValuesItem `json:"namesValues"`
+		Selector      string                                                                     `json:"selector"`
+		ValueWildcard bool                                                                       `json:"valueWildcard"`
+		Wildcard      bool                                                                       `json:"wildcard"`
+	}
+
+	// AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItemNamesValuesItem represents name and value pairs.
+	AttackGroupSpecificHeaderCookieOrParamNameValAdvancedItemNamesValuesItem struct {
+		Names  []string `json:"names"`
+		Values []string `json:"values"`
 	}
 
 	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced describes the advanced exception members that allow you to conditionally exclude requests from inspection.
-	AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced []struct {
+	AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvanced []AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvancedItem
+
+	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvancedItem describes an individual advanced name exception item.
+	AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesAdvancedItem struct {
 		Criteria *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
 		Names    []string                     `json:"names,omitempty"`
 		Selector string                       `json:"selector,omitempty"`
@@ -96,7 +111,10 @@ type (
 	}
 
 	// AttackGroupHeaderCookieOrParamValuesAdvanced describes the list of excepted values in headers, cookies, or query parameters.
-	AttackGroupHeaderCookieOrParamValuesAdvanced []struct {
+	AttackGroupHeaderCookieOrParamValuesAdvanced []AttackGroupHeaderCookieOrParamValuesAdvancedItem
+
+	// AttackGroupHeaderCookieOrParamValuesAdvancedItem describes an individual advanced value exception item.
+	AttackGroupHeaderCookieOrParamValuesAdvancedItem struct {
 		Criteria      *AttackGroupAdvancedCriteria `json:"criteria,omitempty"`
 		ValueWildcard bool                         `json:"valueWildcard"`
 		Values        []string                     `json:"values,omitempty"`
@@ -108,7 +126,10 @@ type (
 	}
 
 	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNames describes the advanced exception members that can be used to conditionally exclude requests from inspection.
-	AttackGroupSpecificHeaderCookieParamXMLOrJSONNames []struct {
+	AttackGroupSpecificHeaderCookieParamXMLOrJSONNames []AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesItem
+
+	// AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesItem describes a single name exception item.
+	AttackGroupSpecificHeaderCookieParamXMLOrJSONNamesItem struct {
 		Names    []string `json:"names,omitempty"`
 		Selector string   `json:"selector,omitempty"`
 		Wildcard bool     `json:"wildcard,omitempty"`
@@ -116,25 +137,28 @@ type (
 
 	// GetAttackGroupsRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group,omitempty"`
 	}
 
 	// GetAttackGroupsResponse is returned from a call to GetAttackGroups.
 	GetAttackGroupsResponse struct {
-		AttackGroups []struct {
-			Group              string                         `json:"group,omitempty"`
-			Action             string                         `json:"action,omitempty"`
-			ConditionException *AttackGroupConditionException `json:"conditionException,omitempty"`
-		} `json:"attackGroupActions,omitempty"`
+		AttackGroups []AttackGroupItem `json:"attackGroupActions,omitempty"`
+	}
+
+	// AttackGroupItem describes an attack group item returned in GetAttackGroupsResponse.
+	AttackGroupItem struct {
+		Group              string                         `json:"group,omitempty"`
+		Action             string                         `json:"action,omitempty"`
+		ConditionException *AttackGroupConditionException `json:"conditionException,omitempty"`
 	}
 
 	// GetAttackGroupRequest is used to retrieve a list of attack groups with their associated actions.
 	GetAttackGroupRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Group    string `json:"group"`
 	}
@@ -147,8 +171,8 @@ type (
 
 	// UpdateAttackGroupRequest is used to modify what action to take when an attack group’s rule triggers.
 	UpdateAttackGroupRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		PolicyID       string          `json:"-"`
 		Group          string          `json:"-"`
 		Action         string          `json:"action"`
@@ -156,10 +180,7 @@ type (
 	}
 
 	// UpdateAttackGroupResponse is returned from a call to UpdateAttackGroup.
-	UpdateAttackGroupResponse struct {
-		Action             string                         `json:"action,omitempty"`
-		ConditionException *AttackGroupConditionException `json:"conditionException,omitempty"`
-	}
+	UpdateAttackGroupResponse GetAttackGroupResponse
 )
 
 // IsEmptyConditionException checks whether an attack group's ConditionException field is empty.

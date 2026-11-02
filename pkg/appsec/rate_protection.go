@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -34,8 +34,8 @@ type (
 
 	// GetRateProtectionRequest is used to retrieve the rate protection setting.
 	GetRateProtectionRequest struct {
-		ConfigID          int    `json:"-"`
-		Version           int    `json:"-"`
+		ConfigID          int64  `json:"-"`
+		Version           int64  `json:"-"`
 		PolicyID          string `json:"-"`
 		ApplyRateControls bool   `json:"applyRateControls"`
 	}
@@ -46,8 +46,8 @@ type (
 	// GetRateProtectionsRequest is used to retrieve the rate protection setting.
 	// Deprecated: this struct will be removed in a future release.
 	GetRateProtectionsRequest struct {
-		ConfigID          int    `json:"-"`
-		Version           int    `json:"-"`
+		ConfigID          int64  `json:"-"`
+		Version           int64  `json:"-"`
 		PolicyID          string `json:"-"`
 		ApplyRateControls bool   `json:"applyRateControls"`
 	}
@@ -58,8 +58,8 @@ type (
 
 	// UpdateRateProtectionRequest is used to modify the rate protection setting.
 	UpdateRateProtectionRequest struct {
-		ConfigID          int    `json:"-"`
-		Version           int    `json:"-"`
+		ConfigID          int64  `json:"-"`
+		Version           int64  `json:"-"`
 		PolicyID          string `json:"-"`
 		ApplyRateControls bool   `json:"applyRateControls"`
 	}

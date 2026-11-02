@@ -2,17 +2,21 @@ package hapi
 
 import (
 	"context"
+	"errors"
 	"io"
 	"net/http"
 	"strings"
 	"testing"
+	"testing/iotest"
+	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func TestNewError(t *testing.T) {
+	t.Parallel()
 	sess, err := session.New()
 	require.NoError(t, err)
 
@@ -43,6 +47,42 @@ func TestNewError(t *testing.T) {
 				Status: http.StatusInternalServerError,
 			},
 		},
+		"valid response, status code 404": {
+			response: &http.Response{
+				StatusCode: http.StatusNotFound,
+				Body: io.NopCloser(strings.NewReader(`{
+					"type":"/hapi/problems/change-id-not-found",
+					"title":"Invalid Change ID",
+					"detail":"Change request not found for change ID 5555555",
+					"changeId":"5555555",
+					"status":404,
+					"errors":[],
+					"method": "GET",
+					"requestTime": "2026-10-02T08:43:36.499655720Z",
+					"instance": "/hapi/error-instances/123",
+					"extensionFields":[{"key":"changeId","value":"5555555"}],
+					"domainPrefix": "example.com",
+					"domainSuffix": "example.net",
+					"requestInstance": "http://example-cloud.com/123"
+				}`)),
+				Request: req,
+			},
+			expected: &Error{
+				Type:            "/hapi/problems/change-id-not-found",
+				Title:           "Invalid Change ID",
+				Detail:          "Change request not found for change ID 5555555",
+				ChangeID:        "5555555",
+				Method:          "GET",
+				RequestTime:     time.Date(2026, time.October, 2, 8, 43, 36, 499655720, time.UTC),
+				Status:          http.StatusNotFound,
+				Errors:          []ErrorItem{},
+				ExtensionFields: []ErrorItem{{Key: "changeId", Value: "5555555"}},
+				Instance:        "/hapi/error-instances/123",
+				DomainPrefix:    "example.com",
+				DomainSuffix:    "example.net",
+				RequestInstance: "http://example-cloud.com/123",
+			},
+		},
 		"invalid response body, assign status code": {
 			response: &http.Response{
 				Status:     "Internal Server Error",
@@ -58,9 +98,18 @@ func TestNewError(t *testing.T) {
 				Status: http.StatusInternalServerError,
 			},
 		},
+		"response body read failure": {
+			response: &http.Response{
+				StatusCode: http.StatusBadRequest,
+				Body:       io.NopCloser(iotest.ErrReader(errors.New("read failed"))),
+				Request:    req,
+			},
+			expected: &Error{Status: http.StatusBadRequest, Title: "Failed to read error body", Detail: "read failed"},
+		},
 	}
 	for name, test := range tests {
 		t.Run(name, func(t *testing.T) {
+			t.Parallel()
 			res := Client(sess).(*hapi).Error(test.response)
 			assert.Equal(t, test.expected, res)
 		})

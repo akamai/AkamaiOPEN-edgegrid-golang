@@ -9,7 +9,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -193,11 +193,10 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 		expectedRequestBody string
 	}{
 		"201 Created": {
-			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
-				ConfigID int `json:"configId"`
-				Version  int `json:"version"`
-			}{ConfigID: 42345,
-				Version: 7}},
+			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: CreateConfigurationCloneCreateFrom{
+				ConfigID: 42345,
+				Version:  7,
+			}},
 			expectedRequestBody: `{"name":"Test","description":"","contractId":"","groupId":0,"hostnames":null,"createFrom":{"configId":42345,"version":7}}`,
 			headers: http.Header{
 				"Content-Type": []string{"application/json;charset=UTF-8"},
@@ -208,11 +207,10 @@ func TestAppSec_CreateConfigurationClone(t *testing.T) {
 			expectedPath:     "/appsec/v1/configs/",
 		},
 		"500 internal server error": {
-			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: struct {
-				ConfigID int `json:"configId"`
-				Version  int `json:"version"`
-			}{ConfigID: 42345,
-				Version: 7}},
+			params: CreateConfigurationCloneRequest{Name: "Test", CreateFrom: CreateConfigurationCloneCreateFrom{
+				ConfigID: 42345,
+				Version:  7,
+			}},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
 			{

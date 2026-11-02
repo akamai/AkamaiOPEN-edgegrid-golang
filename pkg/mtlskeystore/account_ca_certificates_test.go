@@ -7,8 +7,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -230,6 +230,17 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
 				Certificates: []AccountCACertificate{},
 			},
 		},
+		"200 OK - all statuses": {
+			request: ListAccountCACertificatesRequest{
+				Status: []CertificateStatus{CertificateStatusCurrent, CertificateStatusExpired, CertificateStatusPrevious, CertificateStatusQualifying},
+			},
+			responseStatus: http.StatusOK,
+			responseBody:   `{"certificates": []}`,
+			expectedPath:   "/mtls-origin-keystore/v1/ca-certificates?status=CURRENT%2CEXPIRED%2CPREVIOUS%2CQUALIFYING",
+			expectedResponse: &ListAccountCACertificatesResponse{
+				Certificates: []AccountCACertificate{},
+			},
+		},
 		"validation error - wrong status": {
 			request: ListAccountCACertificatesRequest{
 				Status: []CertificateStatus{"SOME_WRONG_STATUS", CertificateStatusCurrent, CertificateStatusPrevious},
@@ -281,33 +292,6 @@ func TestMTLS_Keystore_ListAccountCACertificates(t *testing.T) {
 			}
 			require.NoError(t, err)
 			assert.Equal(t, tc.expectedResponse, result)
-		})
-	}
-}
-
-func TestStatusesToQueryString(t *testing.T) {
-	tests := map[string]struct {
-		statuses []CertificateStatus
-		expected string
-	}{
-		"Single status": {
-			statuses: []CertificateStatus{CertificateStatusCurrent},
-			expected: "status=CURRENT",
-		},
-		"Multiple statuses": {
-			statuses: []CertificateStatus{CertificateStatusCurrent, CertificateStatusExpired},
-			expected: "status=CURRENT%2CEXPIRED",
-		},
-		"All statuses": {
-			statuses: []CertificateStatus{CertificateStatusCurrent, CertificateStatusExpired, CertificateStatusPrevious, CertificateStatusQualifying},
-			expected: "status=CURRENT%2CEXPIRED%2CPREVIOUS%2CQUALIFYING",
-		},
-	}
-
-	for name, tc := range tests {
-		t.Run(name, func(t *testing.T) {
-			result := statusesToQueryString(tc.statuses)
-			assert.Equal(t, tc.expected, result)
 		})
 	}
 }

@@ -6,8 +6,9 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -38,9 +39,7 @@ func (e *edgeworkers) ListGroupsWithinNamespace(ctx context.Context, params List
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrListGroupsWithinNamespace, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/groups", params.Network, params.NamespaceID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces/%s/groups", params.Network, params.NamespaceID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListGroupsWithinNamespace, err)
 	}

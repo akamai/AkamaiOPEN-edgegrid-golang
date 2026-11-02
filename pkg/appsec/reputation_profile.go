@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -45,30 +45,33 @@ type (
 
 	// GetReputationProfilesRequest is used to retrieve the reputation profiles for a configuration.
 	GetReputationProfilesRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// GetReputationProfilesResponse is returned from a call to GetReputationProfiles.
 	GetReputationProfilesResponse struct {
-		ReputationProfiles []struct {
-			Condition        *ReputationProfileCondition `json:"condition,omitempty"`
-			Context          string                      `json:"context,omitempty"`
-			ContextReadable  string                      `json:"-"`
-			Enabled          bool                        `json:"-"`
-			ID               int                         `json:"id,omitempty"`
-			Name             string                      `json:"name,omitempty"`
-			SharedIPHandling string                      `json:"sharedIpHandling,omitempty"`
-			Threshold        int                         `json:"threshold,omitempty"`
-		} `json:"reputationProfiles,omitempty"`
+		ReputationProfiles []GetReputationProfilesResponseReputationProfile `json:"reputationProfiles,omitempty"`
+	}
+
+	// GetReputationProfilesResponseReputationProfile represents an individual reputation profile item.
+	GetReputationProfilesResponseReputationProfile struct {
+		Condition        *ReputationProfileCondition `json:"condition,omitempty"`
+		Context          string                      `json:"context,omitempty"`
+		ContextReadable  string                      `json:"-"`
+		Enabled          bool                        `json:"-"`
+		ID               int64                       `json:"id,omitempty"`
+		Name             string                      `json:"name,omitempty"`
+		SharedIPHandling string                      `json:"sharedIpHandling,omitempty"`
+		Threshold        int                         `json:"threshold,omitempty"`
 	}
 
 	// GetReputationProfileRequest is used to retrieve the details for a specific reputation profile.
 	GetReputationProfileRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// GetReputationProfileResponse is returned from a call to GetReputationProfile.
@@ -77,7 +80,7 @@ type (
 		Context          string                                 `json:"context,omitempty"`
 		ContextReadable  string                                 `json:"-"`
 		Enabled          bool                                   `json:"-"`
-		ID               int                                    `json:"-"`
+		ID               int                                    `json:"id"`
 		Name             string                                 `json:"name,omitempty"`
 		SharedIPHandling string                                 `json:"sharedIpHandling,omitempty"`
 		Threshold        int                                    `json:"threshold,omitempty"`
@@ -85,173 +88,99 @@ type (
 
 	// CreateReputationProfileRequest is used to create a reputation profile.
 	CreateReputationProfileRequest struct {
-		ConfigID       int             `json:"-"`
-		ConfigVersion  int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		ConfigVersion  int64           `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// CreateReputationProfileResponse is returned from a call to CreateReputationProfile.
 	CreateReputationProfileResponse struct {
-		ID               int    `json:"id"`
-		Name             string `json:"name"`
-		Context          string `json:"context"`
-		Description      string `json:"description"`
-		Threshold        int    `json:"threshold"`
-		SharedIPHandling string `json:"sharedIpHandling"`
-		Condition        struct {
-			AtomicConditions []struct {
-				CheckIps      string               `json:"checkIps,omitempty"`
-				ClassName     string               `json:"className"`
-				Index         int                  `json:"index"`
-				PositiveMatch bool                 `json:"positiveMatch"`
-				Value         []string             `json:"value,omitempty"`
-				Name          atomicConditionsName `json:"name,omitempty"`
-				NameCase      bool                 `json:"nameCase,omitempty"`
-				NameWildcard  bool                 `json:"nameWildcard,omitempty"`
-				ValueCase     bool                 `json:"valueCase,omitempty"`
-				ValueWildcard bool                 `json:"valueWildcard,omitempty"`
-				Host          []string             `json:"host,omitempty"`
-			} `json:"atomicConditions"`
-			PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
-		} `json:"condition"`
-		Enabled bool `json:"enabled"`
+		ID               int                                      `json:"id"`
+		Name             string                                   `json:"name"`
+		Context          string                                   `json:"context"`
+		Description      string                                   `json:"description"`
+		Threshold        int                                      `json:"threshold"`
+		SharedIPHandling string                                   `json:"sharedIpHandling"`
+		Condition        CreateReputationProfileResponseCondition `json:"condition"`
+		Enabled          bool                                     `json:"enabled"`
+	}
+
+	// CreateReputationProfileResponseCondition describes condition information in CreateReputationProfileResponse.
+	CreateReputationProfileResponseCondition struct {
+		AtomicConditions []CreateReputationProfileResponseConditionAtomicCondition `json:"atomicConditions"`
+		PositiveMatch    *json.RawMessage                                          `json:"positiveMatch,omitempty"`
+	}
+
+	// CreateReputationProfileResponseConditionAtomicCondition represents an atomic condition in CreateReputationProfileResponse.
+	CreateReputationProfileResponseConditionAtomicCondition struct {
+		CheckIps      string               `json:"checkIps,omitempty"`
+		ClassName     string               `json:"className"`
+		Index         int                  `json:"index"`
+		PositiveMatch bool                 `json:"positiveMatch"`
+		Value         []string             `json:"value,omitempty"`
+		Name          atomicConditionsName `json:"name,omitempty"`
+		NameCase      bool                 `json:"nameCase,omitempty"`
+		NameWildcard  bool                 `json:"nameWildcard,omitempty"`
+		ValueCase     bool                 `json:"valueCase,omitempty"`
+		ValueWildcard bool                 `json:"valueWildcard,omitempty"`
+		Host          []string             `json:"host,omitempty"`
 	}
 
 	// UpdateReputationProfileRequest is used to modify an existing reputation profile.
 	UpdateReputationProfileRequest struct {
-		ConfigID            int             `json:"-"`
-		ConfigVersion       int             `json:"-"`
-		ReputationProfileId int             `json:"-"`
+		ConfigID            int64           `json:"-"`
+		ConfigVersion       int64           `json:"-"`
+		ReputationProfileID int64           `json:"-"`
 		JsonPayloadRaw      json.RawMessage `json:"-"`
 	}
 
 	// UpdateReputationProfileResponse is returned from a call to UpdateReputationProfile.
 	UpdateReputationProfileResponse struct {
-		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
-		Path                  struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"path"`
-		PathMatchType        string `json:"pathMatchType"`
-		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
-		FileExtensions       struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostNames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
-			Name          string   `json:"name"`
-			Values        []string `json:"values"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			ValueInRange  bool     `json:"valueInRange"`
-		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
+		ID               int                                    `json:"id"`
+		Name             string                                 `json:"name"`
+		Context          string                                 `json:"context"`
+		Description      string                                 `json:"description"`
+		Threshold        int                                    `json:"threshold"`
+		SharedIPHandling string                                 `json:"sharedIpHandling"`
+		Condition        *GetReputationProfileResponseCondition `json:"condition,omitempty"`
+		Enabled          bool                                   `json:"enabled"`
 	}
 
 	// RemoveReputationProfileRequest is used to remove a reputation profile.
 	RemoveReputationProfileRequest struct {
-		ConfigID            int `json:"configId"`
-		ConfigVersion       int `json:"configVersion"`
-		ReputationProfileId int `json:"-"`
+		ConfigID            int64 `json:"configId"`
+		ConfigVersion       int64 `json:"configVersion"`
+		ReputationProfileID int64 `json:"-"`
 	}
 
 	// RemoveReputationProfileResponse is returned from a call to RemoveReputationProfile.
-	RemoveReputationProfileResponse struct {
-		ID                    int    `json:"id"`
-		PolicyID              int    `json:"policyId"`
-		ConfigID              int    `json:"configId"`
-		ConfigVersion         int    `json:"configVersion"`
-		MatchType             string `json:"matchType"`
-		Type                  string `json:"type"`
-		Name                  string `json:"name"`
-		Description           string `json:"description"`
-		AverageThreshold      int    `json:"averageThreshold"`
-		BurstThreshold        int    `json:"burstThreshold"`
-		ClientIdentifier      string `json:"clientIdentifier"`
-		UseXForwardForHeaders bool   `json:"useXForwardForHeaders"`
-		RequestType           string `json:"requestType"`
-		SameActionOnIpv6      bool   `json:"sameActionOnIpv6"`
-		Path                  struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"path"`
-		PathMatchType        string `json:"pathMatchType"`
-		PathURIPositiveMatch bool   `json:"pathUriPositiveMatch"`
-		FileExtensions       struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Values        []string `json:"values"`
-		} `json:"fileExtensions"`
-		Hostnames              []string `json:"hostNames"`
-		AdditionalMatchOptions []struct {
-			PositiveMatch bool     `json:"positiveMatch"`
-			Type          string   `json:"type"`
-			Values        []string `json:"values"`
-		} `json:"additionalMatchOptions"`
-		QueryParameters []struct {
-			Name          string   `json:"name"`
-			Values        []string `json:"values"`
-			PositiveMatch bool     `json:"positiveMatch"`
-			ValueInRange  bool     `json:"valueInRange"`
-		} `json:"queryParameters"`
-		CreateDate string `json:"createDate"`
-		UpdateDate string `json:"updateDate"`
-		Used       bool   `json:"used"`
-	}
+	RemoveReputationProfileResponse UpdateReputationProfileResponse
 
 	// ReputationProfileCondition is used as part of a reputation profile description.
 	ReputationProfileCondition struct {
-		AtomicConditions []struct {
-			CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
-			ClassName     string           `json:"className,omitempty"`
-			Index         int              `json:"index,omitempty"`
-			PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
-			Value         []string         `json:"value,omitempty"`
-			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      bool             `json:"nameCase,omitempty"`
-			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
-			ValueCase     bool             `json:"valueCase,omitempty"`
-			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
-			Host          []string         `json:"host,omitempty"`
-		} `json:"atomicConditions,omitempty"`
+		AtomicConditions []ReputationProfileConditionAtomicCondition `json:"atomicConditions,omitempty"`
+		PositiveMatch    *json.RawMessage                            `json:"positiveMatch,omitempty"`
+	}
+
+	// ReputationProfileConditionAtomicCondition describes atomic condition items in ReputationProfileCondition.
+	ReputationProfileConditionAtomicCondition struct {
+		CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
+		ClassName     string           `json:"className,omitempty"`
+		Index         int              `json:"index,omitempty"`
 		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
+		Value         []string         `json:"value,omitempty"`
+		Name          *json.RawMessage `json:"name,omitempty"`
+		NameCase      bool             `json:"nameCase,omitempty"`
+		NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
+		ValueCase     bool             `json:"valueCase,omitempty"`
+		ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
+		Host          []string         `json:"host,omitempty"`
 	}
 
 	// GetReputationProfileResponseCondition is used as part of the response to GetReputationProfile.
 	GetReputationProfileResponseCondition struct {
-		AtomicConditions []struct {
-			CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
-			ClassName     string           `json:"className,omitempty"`
-			Index         int              `json:"index,omitempty"`
-			PositiveMatch json.RawMessage  `json:"positiveMatch,omitempty"`
-			Value         []string         `json:"value,omitempty"`
-			Name          *json.RawMessage `json:"name,omitempty"`
-			NameCase      bool             `json:"nameCase,omitempty"`
-			NameWildcard  *json.RawMessage `json:"nameWildcard,omitempty"`
-			ValueCase     bool             `json:"valueCase,omitempty"`
-			ValueWildcard *json.RawMessage `json:"valueWildcard,omitempty"`
-			Host          []string         `json:"host,omitempty"`
-		} `json:"atomicConditions,omitempty"`
-		PositiveMatch *json.RawMessage `json:"positiveMatch,omitempty"`
+		AtomicConditions []ReputationProfileConditionAtomicCondition `json:"atomicConditions,omitempty"`
+		PositiveMatch    *json.RawMessage                            `json:"positiveMatch,omitempty"`
 	}
 )
 
@@ -285,9 +214,9 @@ func (c *atomicConditionsName) UnmarshalJSON(data []byte) error {
 // Validate validates a GetReputationProfileRequest.
 func (v GetReputationProfileRequest) Validate() error {
 	return validation.Errors{
-		"ConfigID":      validation.Validate(v.ConfigID, validation.Required),
-		"ConfigVersion": validation.Validate(v.ConfigVersion, validation.Required),
-		"RatePolicyID":  validation.Validate(v.ReputationProfileId, validation.Required),
+		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
+		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -312,7 +241,7 @@ func (v UpdateReputationProfileRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
 		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
-		"ReputationProfileId": validation.Validate(v.ReputationProfileId, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -321,7 +250,7 @@ func (v RemoveReputationProfileRequest) Validate() error {
 	return validation.Errors{
 		"ConfigID":            validation.Validate(v.ConfigID, validation.Required),
 		"ConfigVersion":       validation.Validate(v.ConfigVersion, validation.Required),
-		"ReputationProfileId": validation.Validate(v.ReputationProfileId, validation.Required),
+		"ReputationProfileID": validation.Validate(v.ReputationProfileID, validation.Required),
 	}.Filter()
 }
 
@@ -337,7 +266,7 @@ func (p *appsec) GetReputationProfile(ctx context.Context, params GetReputationP
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d",
 		params.ConfigID,
 		params.ConfigVersion,
-		params.ReputationProfileId)
+		params.ReputationProfileID)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
 	if err != nil {
@@ -388,10 +317,10 @@ func (p *appsec) GetReputationProfiles(ctx context.Context, params GetReputation
 		return nil, p.Error(resp)
 	}
 
-	if params.ReputationProfileId != 0 {
+	if params.ReputationProfileID != 0 {
 		var filteredResult GetReputationProfilesResponse
 		for _, val := range result.ReputationProfiles {
-			if val.ID == params.ReputationProfileId {
+			if val.ID == params.ReputationProfileID {
 				filteredResult.ReputationProfiles = append(filteredResult.ReputationProfiles, val)
 			}
 		}
@@ -413,7 +342,7 @@ func (p *appsec) UpdateReputationProfile(ctx context.Context, params UpdateReput
 		"/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d",
 		params.ConfigID,
 		params.ConfigVersion,
-		params.ReputationProfileId,
+		params.ReputationProfileID,
 	)
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
@@ -478,7 +407,7 @@ func (p *appsec) RemoveReputationProfile(ctx context.Context, params RemoveReput
 		return nil, fmt.Errorf("%w: %s", ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d", params.ConfigID, params.ConfigVersion, params.ReputationProfileId)
+	uri := fmt.Sprintf("/appsec/v1/configs/%d/versions/%d/reputation-profiles/%d", params.ConfigID, params.ConfigVersion, params.ReputationProfileID)
 	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create RemoveReputationProfile request: %w", err)

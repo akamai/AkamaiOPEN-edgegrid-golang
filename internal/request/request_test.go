@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -747,6 +747,68 @@ func TestRequestBuilder_AddHeader(t *testing.T) {
 				assert.Equal(t, http.MethodPut, httpReq.Method)
 				assert.Equal(t, ctx, httpReq.Context())
 			}
+		})
+	}
+}
+
+func TestRequestBuilder_AddHeaderIf(t *testing.T) {
+	t.Parallel()
+	tests := map[string]struct {
+		key             string
+		value           string
+		condition       bool
+		expectedHeaders http.Header
+		expectErr       string
+	}{
+		"condition met - header added": {
+			key:             "testHeader",
+			value:           "testValue",
+			condition:       true,
+			expectedHeaders: http.Header{"Testheader": {"testValue"}},
+		},
+		"condition not met - header not added": {
+			key:             "testHeader",
+			value:           "testValue",
+			condition:       false,
+			expectedHeaders: http.Header{},
+		},
+		"condition not met - empty value is ignored": {
+			key:             "testHeader",
+			value:           "",
+			condition:       false,
+			expectedHeaders: http.Header{},
+		},
+		"expect error - condition met - empty value": {
+			key:       "testHeader",
+			value:     "",
+			condition: true,
+			expectErr: "invalid headers: 'Testheader' header parameter value cannot contain empty value",
+		},
+		"expect error - condition met - empty key": {
+			key:       "",
+			value:     "testValue",
+			condition: true,
+			expectErr: "invalid headers: header key cannot be empty",
+		},
+	}
+
+	for name, tt := range tests {
+		t.Run(name, func(t *testing.T) {
+			ctx := context.Background()
+			req := NewPut(ctx, "/test/path").AddHeaderIf(tt.key, tt.value, tt.condition)
+
+			httpReq, err := req.Build()
+			if tt.expectErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.expectErr)
+				return
+			}
+
+			require.NoError(t, err)
+			assert.Equal(t, tt.expectedHeaders, httpReq.Header)
+			assert.Equal(t, "/test/path", httpReq.URL.String())
+			assert.Equal(t, http.MethodPut, httpReq.Method)
+			assert.Equal(t, ctx, httpReq.Context())
 		})
 	}
 }

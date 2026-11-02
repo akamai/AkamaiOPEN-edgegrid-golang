@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -23,15 +23,15 @@ type (
 
 	// GetPenaltyBoxConditionsRequest describes the GET request for penalty box conditions.
 	GetPenaltyBoxConditionsRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 		PolicyID string
 	}
 
 	// UpdatePenaltyBoxConditionsRequest describes the PUT request to modify the penalty box conditions.
 	UpdatePenaltyBoxConditionsRequest struct {
-		ConfigID          int
-		Version           int
+		ConfigID          int64
+		Version           int64
 		PolicyID          string
 		ConditionsPayload PenaltyBoxConditionsPayload
 	}

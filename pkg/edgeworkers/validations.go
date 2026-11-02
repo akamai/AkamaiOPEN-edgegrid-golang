@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -50,12 +50,13 @@ func (e *edgeworkers) ValidateBundle(ctx context.Context, params ValidateBundleR
 		return nil, fmt.Errorf("%s: %w: %s", ErrValidateBundle, ErrStructValidation, err)
 	}
 
-	uri := "/edgeworkers/v1/validations"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, io.NopCloser(params.Bundle))
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/validations").
+		AddHeader("Content-Type", "application/gzip").
+		WithBody(params.Bundle).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrValidateBundle, err)
 	}
-	req.Header.Add("Content-Type", "application/gzip")
 
 	var result ValidateBundleResponse
 	resp, err := e.Exec(req, &result)

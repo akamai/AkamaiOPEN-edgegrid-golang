@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -21,40 +21,52 @@ type (
 
 	// GetApiHostnameCoverageMatchTargetsRequest is used to retrieve the API and website match targets that protect a hostname.
 	GetApiHostnameCoverageMatchTargetsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
 	// GetApiHostnameCoverageMatchTargetsResponse is returned from a call to GetApiHostnameCoverageMatchTargets.
 	GetApiHostnameCoverageMatchTargetsResponse struct {
-		MatchTargets struct {
-			WebsiteTargets []struct {
-				Type                         string                                                `json:"type"`
-				BypassNetworkLists           *HostnameCoverageMatchTargetBypassNetworkLists        `json:"bypassNetworkLists,omitempty"`
-				ConfigID                     int                                                   `json:"configId"`
-				ConfigVersion                int                                                   `json:"configVersion"`
-				DefaultFile                  string                                                `json:"defaultFile"`
-				EffectiveSecurityControls    *HostnameCoverageMatchTargetEffectiveSecurityControls `json:"effectiveSecurityControls,omitempty"`
-				FilePaths                    []string                                              `json:"filePaths"`
-				Hostnames                    []string                                              `json:"hostnames"`
-				IsNegativeFileExtensionMatch bool                                                  `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool                                                  `json:"isNegativePathMatch"`
-				SecurityPolicy               struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
-				Sequence int `json:"sequence"`
-				TargetID int `json:"targetId"`
-			} `json:"websiteTargets"`
-			APITargets []interface{} `json:"apiTargets"`
-		} `json:"matchTargets"`
+		MatchTargets HostnameCoverageMatchTargets `json:"matchTargets"`
 	}
 
-	// HostnameCoverageMatchTargetBypassNetworkLists describes a network list included in the list of bypass network lists.
-	HostnameCoverageMatchTargetBypassNetworkLists []struct {
+	// HostnameCoverageMatchTargets contains website and API match targets for a hostname.
+	HostnameCoverageMatchTargets struct {
+		WebsiteTargets []HostnameCoverageWebsiteTarget `json:"websiteTargets"`
+		APITargets     []interface{}                   `json:"apiTargets"`
+	}
+
+	// HostnameCoverageWebsiteTarget describes a website match target in hostname coverage.
+	HostnameCoverageWebsiteTarget struct {
+		Type                         string                                                `json:"type"`
+		BypassNetworkLists           *HostnameCoverageMatchTargetBypassNetworkLists        `json:"bypassNetworkLists,omitempty"`
+		ConfigID                     int64                                                 `json:"configId"`
+		ConfigVersion                int64                                                 `json:"configVersion"`
+		DefaultFile                  string                                                `json:"defaultFile"`
+		EffectiveSecurityControls    *HostnameCoverageMatchTargetEffectiveSecurityControls `json:"effectiveSecurityControls,omitempty"`
+		FilePaths                    []string                                              `json:"filePaths"`
+		Hostnames                    []string                                              `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool                                                  `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          bool                                                  `json:"isNegativePathMatch"`
+		SecurityPolicy               HostnameCoverageMatchTargetSecurityPolicy             `json:"securityPolicy"`
+		Sequence                     int                                                   `json:"sequence"`
+		TargetID                     int                                                   `json:"targetId"`
+	}
+
+	// HostnameCoverageMatchTargetSecurityPolicy describes the security policy associated with a target.
+	HostnameCoverageMatchTargetSecurityPolicy struct {
+		PolicyID string `json:"policyId"`
+	}
+
+	// HostnameCoverageMatchTargetBypassNetworkListsItem describes a single network list item in bypass network lists.
+	HostnameCoverageMatchTargetBypassNetworkListsItem struct {
 		ID   string `json:"id"`
 		Name string `json:"name"`
 	}
+
+	// HostnameCoverageMatchTargetBypassNetworkLists describes a network list included in the list of bypass network lists.
+	HostnameCoverageMatchTargetBypassNetworkLists []HostnameCoverageMatchTargetBypassNetworkListsItem
 
 	// HostnameCoverageMatchTargetEffectiveSecurityControls describes the effective security controls for a website target.
 	HostnameCoverageMatchTargetEffectiveSecurityControls struct {

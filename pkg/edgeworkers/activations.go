@@ -5,17 +5,20 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
+	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
 	// ListActivationsRequest contains parameters used to list activations
 	ListActivationsRequest struct {
-		EdgeWorkerID int
-		Version      string
+		EdgeWorkerID    int
+		Version         string
+		ActiveOnNetwork bool
+		Network         ActivationNetwork
 	}
 
 	// ActivateVersionRequest contains path parameters and request body used to activate an edge worker
@@ -79,6 +82,10 @@ const (
 func (r ListActivationsRequest) Validate() error {
 	return validation.Errors{
 		"EdgeWorkerID": validation.Validate(r.EdgeWorkerID, validation.Required),
+		"Network": validation.Validate(r.Network, validation.When(r.Network != "",
+			validation.In(ActivationNetworkStaging, ActivationNetworkProduction).Error(
+				fmt.Sprintf("value '%s' is invalid. Must be one of: '%s' or '%s'",
+					r.Network, ActivationNetworkStaging, ActivationNetworkProduction)))),
 	}.Filter()
 }
 
@@ -134,20 +141,13 @@ func (e *edgeworkers) ListActivations(ctx context.Context, params ListActivation
 		return nil, fmt.Errorf("%s: %w: %s", ErrListActivations, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID))
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID).
+		AddQueryParamIf("version", params.Version, params.Version != "").
+		AddQueryParam("activeOnNetwork", strconv.FormatBool(params.ActiveOnNetwork)).
+		AddQueryParamIf("network", string(params.Network), params.Network != "").
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListActivations, err)
-	}
-
-	q := uri.Query()
-	if params.Version != "" {
-		q.Add("version", params.Version)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListActivations, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListActivations, err)
 	}
 
 	var result ListActivationsResponse
@@ -172,9 +172,7 @@ func (e *edgeworkers) GetActivation(ctx context.Context, params GetActivationReq
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetActivation, err)
 	}
@@ -201,16 +199,16 @@ func (e *edgeworkers) ActivateVersion(ctx context.Context, params ActivateVersio
 		return nil, fmt.Errorf("%s: %w: %s", ErrActivateVersion, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids/%d/activations", params.EdgeWorkerID).
+		WithBody(params.ActivateVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrActivateVersion, err)
 	}
 
 	var result Activation
 
-	resp, err := e.Exec(req, &result, params.ActivateVersion)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrActivateVersion, err)
 	}
@@ -231,9 +229,7 @@ func (e *edgeworkers) CancelPendingActivation(ctx context.Context, params Cancel
 		return nil, fmt.Errorf("%s: %w: %s", ErrCancelActivation, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/edgeworkers/v1/ids/%d/activations/%d", params.EdgeWorkerID, params.ActivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCancelActivation, err)
 	}

@@ -8,7 +8,7 @@ import (
 	"reflect"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -46,93 +46,82 @@ type (
 
 	// GetCustomDenyListRequest is used to retrieve the custom deny actions for a configuration.
 	GetCustomDenyListRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		ID       string `json:"id,omitempty"`
 	}
 
 	// GetCustomDenyListResponse is returned from a call to GetCustomDenyList.
 	GetCustomDenyListResponse struct {
-		CustomDenyList []struct {
-			Description string       `json:"description,omitempty"`
-			Name        string       `json:"name"`
-			ID          customDenyID `json:"id"`
-			Parameters  []struct {
-				DisplayName string `json:"-"`
-				Name        string `json:"name"`
-				Value       string `json:"value"`
-			} `json:"parameters"`
-		} `json:"customDenyList"`
+		CustomDenyList []GetCustomDenyListItem `json:"customDenyList"`
+	}
+
+	// GetCustomDenyListItem represents an individual custom deny action in the list.
+	GetCustomDenyListItem struct {
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"id"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// GetCustomDenyRequest is used to retrieve a specific custom deny action.
 	GetCustomDenyRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		ID       string `json:"id,omitempty"`
 	}
 
 	// GetCustomDenyResponse is returned from a call to GetCustomDeny.
 	GetCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"-"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"-"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// CreateCustomDenyRequest is used to create a new custom deny action for a specific configuration.
 	CreateCustomDenyRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// CreateCustomDenyResponse is returned from a call to CreateCustomDeny.
 	CreateCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"id"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          customDenyID          `json:"id"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
 	// UpdateCustomDenyRequest is used to details for a specific custom deny action.
 	UpdateCustomDenyRequest struct {
-		ConfigID       int             `json:"-"`
-		Version        int             `json:"-"`
+		ConfigID       int64           `json:"-"`
+		Version        int64           `json:"-"`
 		ID             string          `json:"id"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// UpdateCustomDenyResponse is returned from a call to UpdateCustomDeny.
-	UpdateCustomDenyResponse struct {
-		Description string       `json:"description,omitempty"`
-		Name        string       `json:"name"`
-		ID          customDenyID `json:"-"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
-	}
+	UpdateCustomDenyResponse GetCustomDenyResponse
 
 	// RemoveCustomDenyRequest is used to remove an existing custom deny action.
 	RemoveCustomDenyRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		ID       string `json:"id,omitempty"`
 	}
 
 	// RemoveCustomDenyResponse is returned from a call to RemoveCustomDeny.
 	RemoveCustomDenyResponse struct {
 		Empty string `json:"-"`
+	}
+
+	// CustomDenyParameter represents a parameter of a custom deny action.
+	CustomDenyParameter struct {
+		DisplayName string `json:"-"`
+		Name        string `json:"name"`
+		Value       string `json:"value"`
 	}
 )
 

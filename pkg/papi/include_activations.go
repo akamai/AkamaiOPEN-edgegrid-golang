@@ -8,10 +8,10 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -21,6 +21,16 @@ type (
 
 	// DeactivateIncludeRequest contains parameters used to deactivate include
 	DeactivateIncludeRequest ActivateOrDeactivateIncludeRequest
+
+	activateIncludeRequestBody struct {
+		ActivateIncludeRequest
+		ActivationType ActivationType `json:"activationType"`
+	}
+
+	deactivateIncludeRequestBody struct {
+		DeactivateIncludeRequest
+		ActivationType ActivationType `json:"activationType"`
+	}
 
 	// ActivateOrDeactivateIncludeRequest contains parameters used to activate or deactivate include
 	ActivateOrDeactivateIncludeRequest struct {
@@ -224,10 +234,11 @@ func (c *ComplianceRecordNone) Validate() error {
 // MarshalJSON is a custom marshaller for ComplianceRecordNone struct
 func (c ComplianceRecordNone) MarshalJSON() ([]byte, error) {
 	type ComplianceRecord ComplianceRecordNone
-	v := struct {
+	type complianceRecordNoneJSON struct {
 		ComplianceRecord
 		NoncomplianceReason string `json:"noncomplianceReason"`
-	}{
+	}
+	v := complianceRecordNoneJSON{
 		ComplianceRecord(c),
 		c.noncomplianceReasonType(),
 	}
@@ -248,10 +259,11 @@ func (c *ComplianceRecordOther) Validate() error {
 // MarshalJSON is a custom marshaller for ComplianceRecordOther struct
 func (c ComplianceRecordOther) MarshalJSON() ([]byte, error) {
 	type ComplianceRecord ComplianceRecordOther
-	v := struct {
+	type complianceRecordOtherJSON struct {
 		ComplianceRecord
 		NoncomplianceReason string `json:"noncomplianceReason"`
-	}{
+	}
+	v := complianceRecordOtherJSON{
 		ComplianceRecord(c),
 		c.noncomplianceReasonType(),
 	}
@@ -265,10 +277,11 @@ func (c *ComplianceRecordNoProductionTraffic) noncomplianceReasonType() string {
 // MarshalJSON is a custom marshaller for ComplianceRecordNoProductionTraffic struct
 func (c ComplianceRecordNoProductionTraffic) MarshalJSON() ([]byte, error) {
 	type ComplianceRecord ComplianceRecordNoProductionTraffic
-	v := struct {
+	type complianceRecordNoProductionTrafficJSON struct {
 		ComplianceRecord
 		NoncomplianceReason string `json:"noncomplianceReason"`
-	}{
+	}
+	v := complianceRecordNoProductionTrafficJSON{
 		ComplianceRecord(c),
 		c.noncomplianceReasonType(),
 	}
@@ -282,10 +295,11 @@ func (c *ComplianceRecordEmergency) noncomplianceReasonType() string {
 // MarshalJSON is a custom marshaller for ComplianceRecordEmergency struct
 func (c ComplianceRecordEmergency) MarshalJSON() ([]byte, error) {
 	type ComplianceRecord ComplianceRecordEmergency
-	v := struct {
+	type complianceRecordEmergencyJSON struct {
 		ComplianceRecord
 		NoncomplianceReason string `json:"noncomplianceReason"`
-	}{
+	}
+	v := complianceRecordEmergencyJSON{
 		ComplianceRecord(c),
 		c.noncomplianceReasonType(),
 	}
@@ -354,12 +368,9 @@ func (p *papi) ActivateInclude(ctx context.Context, params ActivateIncludeReques
 		params.IgnoreHTTPErrors = ptr.To(true)
 	}
 
-	requestBody := struct {
-		ActivateIncludeRequest
-		ActivationType ActivationType `json:"activationType"`
-	}{
-		params,
-		ActivationTypeActivate,
+	requestBody := activateIncludeRequestBody{
+		ActivateIncludeRequest: params,
+		ActivationType:         ActivationTypeActivate,
 	}
 
 	req, err := request.NewPost(ctx, "/papi/v1/includes/%s/activations", params.IncludeID).
@@ -401,12 +412,9 @@ func (p *papi) DeactivateInclude(ctx context.Context, params DeactivateIncludeRe
 		params.IgnoreHTTPErrors = ptr.To(true)
 	}
 
-	requestBody := struct {
-		DeactivateIncludeRequest
-		ActivationType ActivationType `json:"activationType"`
-	}{
-		params,
-		ActivationTypeDeactivate,
+	requestBody := deactivateIncludeRequestBody{
+		DeactivateIncludeRequest: params,
+		ActivationType:           ActivationTypeDeactivate,
 	}
 
 	req, err := request.NewPost(ctx, "/papi/v1/includes/%s/activations", params.IncludeID).

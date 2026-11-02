@@ -5,10 +5,10 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -347,18 +347,9 @@ func (e *edgeworkers) ListEdgeKVNamespaces(ctx context.Context, params ListEdgeK
 		return nil, fmt.Errorf("%s: %w: %s", ErrListEdgeKVNamespace, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces", params.Network))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListEdgeKVNamespace, err.Error())
-	}
-
-	if params.Details {
-		q := uri.Query()
-		q.Add("details", "on")
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces", params.Network).
+		AddQueryParamIf("details", "on", params.Details).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEdgeKVNamespace, err.Error())
 	}
@@ -385,8 +376,7 @@ func (e *edgeworkers) GetEdgeKVNamespace(ctx context.Context, params GetEdgeKVNa
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeKVNamespace, ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeKVNamespace, err.Error())
 	}
@@ -413,14 +403,15 @@ func (e *edgeworkers) CreateEdgeKVNamespace(ctx context.Context, params CreateEd
 		return nil, fmt.Errorf("%s: %w: %s", ErrCreateEdgeKVNamespace, ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces", params.Network)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/edgekv/v1/networks/%s/namespaces", params.Network).
+		WithBody(params.NamespaceRequest).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeKVNamespace, err.Error())
 	}
 
 	var result Namespace
-	resp, err := e.Exec(req, &result, params.NamespaceRequest)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeKVNamespace, err.Error())
 	}
@@ -441,14 +432,15 @@ func (e *edgeworkers) UpdateEdgeKVNamespace(ctx context.Context, params UpdateEd
 		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateEdgeKVNamespace, ErrStructValidation, err.Error())
 	}
 
-	uri := fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name)
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri, nil)
+	req, err := request.NewPut(ctx, "/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name).
+		WithBody(params.UpdateNamespace).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateEdgeKVNamespace, err.Error())
 	}
 
 	var result UpdateNamespaceResponse
-	resp, err := e.Exec(req, &result, params.UpdateNamespace)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeKVNamespace, err.Error())
 	}
@@ -469,18 +461,9 @@ func (e *edgeworkers) DeleteEdgeKVNamespace(ctx context.Context, params DeleteEd
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeleteEdgeKVNamespace, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrDeleteEdgeKVNamespace, err.Error())
-	}
-
-	if params.Sync {
-		q := url.Values{}
-		q.Add("sync", "true")
-		uri.RawQuery = q.Encode()
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/edgekv/v1/networks/%s/namespaces/%s", params.Network, params.Name).
+		AddQueryParamIf("sync", "true", params.Sync).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeleteEdgeKVNamespace, err.Error())
 	}
@@ -514,12 +497,7 @@ func (e *edgeworkers) GetNamespaceScheduledDeleteTime(ctx context.Context, param
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetScheduledDeleteTime, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetScheduledDeleteTime, err.Error())
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetScheduledDeleteTime, err.Error())
 	}
@@ -547,18 +525,15 @@ func (e *edgeworkers) RescheduleNamespaceDelete(ctx context.Context, params Resc
 		return nil, fmt.Errorf("%s: %w: %s", ErrRescheduleNamespaceDelete, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrRescheduleNamespaceDelete, err.Error())
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrRescheduleNamespaceDelete, err.Error())
 	}
 
 	var result RescheduleNamespaceDeleteResponse
-	resp, err := e.Exec(req, &result.ScheduledDeleteTime, params.Body)
+	resp, err := e.Exec(req, &result.ScheduledDeleteTime)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrRescheduleNamespaceDelete, err.Error())
 	}
@@ -580,12 +555,7 @@ func (e *edgeworkers) CancelScheduledNamespaceDelete(ctx context.Context, params
 		return fmt.Errorf("%s: %w: %s", ErrCancelScheduledNamespaceDelete, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrCancelScheduledNamespaceDelete, err.Error())
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/edgekv/v1/networks/%s/namespaces/%s/status/scheduled-delete", params.Network, params.Name).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrCancelScheduledNamespaceDelete, err.Error())
 	}

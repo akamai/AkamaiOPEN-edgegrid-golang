@@ -130,6 +130,14 @@ func (b *Builder) AddHeader(key, value string) *Builder {
 	return b
 }
 
+// AddHeaderIf adds a header to the request if the condition is met.
+func (b *Builder) AddHeaderIf(key, value string, condition bool) *Builder {
+	if condition {
+		b.headers.Add(key, value)
+	}
+	return b
+}
+
 // WithBody sets the request body. The body will be JSON-marshaled when Build is called,
 // unless it is already a []byte or an io.Reader, in which case it is used as-is.
 func (b *Builder) WithBody(body any) *Builder {

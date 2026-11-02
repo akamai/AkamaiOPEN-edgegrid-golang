@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"errors"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"strings"
@@ -19,11 +20,13 @@ func TestValidateBundle(t *testing.T) {
 		responseStatus   int
 		responseBody     string
 		expectedPath     string
+		expectedBody     string
 		expectedResponse *ValidateBundleResponse
 		withError        error
 	}{
 		"200 OK": {
 			params:         ValidateBundleRequest{Bundle{strings.NewReader("a valid bundle")}},
+			expectedBody:   "a valid bundle",
 			responseStatus: 200,
 			responseBody: `
 {
@@ -116,6 +119,12 @@ func TestValidateBundle(t *testing.T) {
 			mockServer := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				assert.Equal(t, test.expectedPath, r.URL.String())
 				assert.Equal(t, http.MethodPost, r.Method)
+				assert.Equal(t, "application/gzip", r.Header.Get("Content-Type"))
+				if test.expectedBody != "" {
+					body, err := io.ReadAll(r.Body)
+					assert.NoError(t, err)
+					assert.Equal(t, test.expectedBody, string(body))
+				}
 				w.WriteHeader(test.responseStatus)
 				_, err := w.Write([]byte(test.responseBody))
 				assert.NoError(t, err)

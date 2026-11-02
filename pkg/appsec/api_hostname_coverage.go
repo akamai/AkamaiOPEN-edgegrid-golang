@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -20,27 +20,30 @@ type (
 
 	// GetApiHostnameCoverageRequest is used to call GetApiHostnameCoverage.
 	GetApiHostnameCoverageRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
 	// GetApiHostnameCoverageResponse is returned from a call to GetApiHostnameCoverage.
 	GetApiHostnameCoverageResponse struct {
-		HostnameCoverage []struct {
-			Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
-			Status         string                         `json:"status"`
-			HasMatchTarget bool                           `json:"hasMatchTarget"`
-			Hostname       string                         `json:"hostname"`
-			PolicyNames    []string                       `json:"policyNames"`
-		} `json:"hostnameCoverage"`
+		HostnameCoverage []HostnameCoverageItem `json:"hostnameCoverage"`
+	}
+
+	// HostnameCoverageItem describes protections and status for a single hostname.
+	HostnameCoverageItem struct {
+		Configuration  *ConfigurationHostnameCoverage `json:"configuration,omitempty"`
+		Status         string                         `json:"status"`
+		HasMatchTarget bool                           `json:"hasMatchTarget"`
+		Hostname       string                         `json:"hostname"`
+		PolicyNames    []string                       `json:"policyNames"`
 	}
 
 	// ConfigurationHostnameCoverage describes a specific configuration version.
 	ConfigurationHostnameCoverage struct {
 		ID      int    `json:"id,omitempty"`
 		Name    string `json:"name,omitempty"`
-		Version int    `json:"version,omitempty"`
+		Version int64  `json:"version,omitempty"`
 	}
 )
 

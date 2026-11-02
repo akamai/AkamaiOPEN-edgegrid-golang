@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -57,7 +57,7 @@ func TestListActivations(t *testing.T) {
         }
     ]
 }`,
-			expectedPath: "/edgeworkers/v1/ids/42/activations",
+			expectedPath: "/edgeworkers/v1/ids/42/activations?activeOnNetwork=false",
 			expectedResponse: &ListActivationsResponse{
 				Activations: []Activation{
 					{
@@ -110,7 +110,64 @@ func TestListActivations(t *testing.T) {
         }
     ]
 }`,
-			expectedPath: "/edgeworkers/v1/ids/42/activations?version=1",
+			expectedPath: "/edgeworkers/v1/ids/42/activations?activeOnNetwork=false&version=1",
+			expectedResponse: &ListActivationsResponse{
+				Activations: []Activation{
+					{
+						AccountID:        "B-M-1KQK3WU",
+						ActivationID:     1,
+						CreatedBy:        "jsmith",
+						CreatedTime:      "2018-07-09T08:13:54Z",
+						EdgeWorkerID:     42,
+						LastModifiedTime: "2018-07-09T08:35:02Z",
+						Network:          "STAGING",
+						Status:           "IN_PROGRESS",
+						Version:          "1",
+						Note:             "activation note1",
+					},
+				},
+			},
+		},
+		"200 OK with activation filters": {
+			params: ListActivationsRequest{
+				EdgeWorkerID:    42,
+				Version:         "1",
+				ActiveOnNetwork: true,
+				Network:         ActivationNetworkStaging,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "activations": []
+}`,
+			expectedPath:     "/edgeworkers/v1/ids/42/activations?activeOnNetwork=true&network=STAGING&version=1",
+			expectedResponse: &ListActivationsResponse{Activations: []Activation{}},
+		},
+		"200 OK with staging network filter": {
+			params: ListActivationsRequest{
+				EdgeWorkerID:    42,
+				ActiveOnNetwork: true,
+				Network:         ActivationNetworkStaging,
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "activations": [
+        {
+            "edgeWorkerId": 42,
+            "version": "1",
+            "activationId": 1,
+            "accountId": "B-M-1KQK3WU",
+            "status": "IN_PROGRESS",
+            "network": "STAGING",
+            "createdBy": "jsmith",
+            "createdTime": "2018-07-09T08:13:54Z",
+            "lastModifiedTime": "2018-07-09T08:35:02Z",
+            "note": "activation note1"
+        }
+    ]
+}`,
+			expectedPath: "/edgeworkers/v1/ids/42/activations?activeOnNetwork=true&network=STAGING",
 			expectedResponse: &ListActivationsResponse{
 				Activations: []Activation{
 					{
@@ -142,7 +199,7 @@ func TestListActivations(t *testing.T) {
     "status": 500,
     "errorCode": "EW4303"
 }`,
-			expectedPath: "/edgeworkers/v1/ids/42/activations",
+			expectedPath: "/edgeworkers/v1/ids/42/activations?activeOnNetwork=false",
 			withError: &Error{
 				Type:      "/edgeworkers/error-types/edgeworkers-server-error",
 				Title:     "An unexpected error has occurred.",
@@ -154,6 +211,13 @@ func TestListActivations(t *testing.T) {
 		},
 		"missing edge worker id": {
 			params:    ListActivationsRequest{},
+			withError: ErrStructValidation,
+		},
+		"invalid network": {
+			params: ListActivationsRequest{
+				EdgeWorkerID: 42,
+				Network:      "invalid",
+			},
 			withError: ErrStructValidation,
 		},
 	}

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -17,51 +17,8 @@ type (
 
 	// GetNetworkListSubscriptionResponse contains response from GetNetworkListSubscription
 	GetNetworkListSubscriptionResponse struct {
-		Links struct {
-			Create struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"create"`
-		} `json:"links"`
-		NetworkLists []struct {
-			ElementCount int `json:"elementCount"`
-			Links        struct {
-				ActivateInProduction struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInProduction"`
-				ActivateInStaging struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInStaging"`
-				AppendItems struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"appendItems"`
-				Retrieve struct {
-					Href string `json:"href"`
-				} `json:"retrieve"`
-				StatusInProduction struct {
-					Href string `json:"href"`
-				} `json:"statusInProduction"`
-				StatusInStaging struct {
-					Href string `json:"href"`
-				} `json:"statusInStaging"`
-				Update struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"update"`
-			} `json:"links"`
-			Name               string `json:"name"`
-			NetworkListType    string `json:"networkListType"`
-			ReadOnly           bool   `json:"readOnly"`
-			Shared             bool   `json:"shared"`
-			SyncPoint          int    `json:"syncPoint"`
-			Type               string `json:"type"`
-			UniqueID           string `json:"uniqueId"`
-			AccessControlGroup string `json:"accessControlGroup,omitempty"`
-			Description        string `json:"description,omitempty"`
-		} `json:"networkLists"`
+		Links        NetworkListCreateLink `json:"links"`
+		NetworkLists []NetworkListItem     `json:"networkLists"`
 	}
 
 	// UpdateNetworkListSubscriptionRequest contains request parameters for UpdateNetworkListSubscription method

@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -42,37 +42,32 @@ type (
 
 	// GetActivationsResponse is returned from a call to GetActivations.
 	GetActivationsResponse struct {
-		DispatchCount     int          `json:"dispatchCount"`
-		ActivationID      int          `json:"activationId"`
-		Action            string       `json:"action"`
-		Status            StatusValue  `json:"status"`
-		Network           NetworkValue `json:"network"`
-		Estimate          string       `json:"estimate"`
-		CreatedBy         string       `json:"createdBy"`
-		CreateDate        time.Time    `json:"createDate"`
-		ActivationConfigs []struct {
-			ConfigID              int    `json:"configId"`
-			ConfigName            string `json:"configName"`
-			ConfigVersion         int    `json:"configVersion"`
-			PreviousConfigVersion int    `json:"previousConfigVersion"`
-		} `json:"activationConfigs"`
+		DispatchCount     int                            `json:"dispatchCount"`
+		ActivationID      int                            `json:"activationId"`
+		Action            string                         `json:"action"`
+		Status            StatusValue                    `json:"status"`
+		Network           NetworkValue                   `json:"network"`
+		Estimate          string                         `json:"estimate"`
+		CreatedBy         string                         `json:"createdBy"`
+		CreateDate        time.Time                      `json:"createDate"`
+		ActivationConfigs []ActivationConfigResponseItem `json:"activationConfigs"`
 	}
 
 	// GetActivationHistoryRequest is used to request the activation history for a configuration.
 	GetActivationHistoryRequest struct {
-		ConfigID int `json:"configId"`
+		ConfigID int64 `json:"configId"`
 	}
 
 	// GetActivationHistoryResponse lists the activation history for a configuration.
 	GetActivationHistoryResponse struct {
-		ConfigID          int          `json:"configId"`
+		ConfigID          int64        `json:"configId"`
 		ActivationHistory []Activation `json:"activationHistory,omitempty"`
 	}
 
 	// Activation represents the status of a configuration activation.
 	Activation struct {
 		ActivationID       int       `json:"activationId"`
-		Version            int       `json:"version"`
+		Version            int64     `json:"version"`
 		Status             string    `json:"status"`
 		Network            string    `json:"Network"`
 		ActivatedBy        string    `json:"activatedBy"`
@@ -83,69 +78,61 @@ type (
 
 	// CreateActivationsRequest is used to request activation or deactivation of a configuration.
 	CreateActivationsRequest struct {
-		Action             string   `json:"action"`
-		Network            string   `json:"network"`
-		Note               string   `json:"note"`
-		NotificationEmails []string `json:"notificationEmails"`
-		ActivationConfigs  []struct {
-			ConfigID      int `json:"configId"`
-			ConfigVersion int `json:"configVersion"`
-		} `json:"activationConfigs"`
+		Action             string                        `json:"action"`
+		Network            string                        `json:"network"`
+		Note               string                        `json:"note"`
+		NotificationEmails []string                      `json:"notificationEmails"`
+		ActivationConfigs  []ActivationConfigRequestItem `json:"activationConfigs"`
 	}
 
 	// CreateActivationsResponse is returned from a call to CreateActivations.
 	CreateActivationsResponse struct {
-		DispatchCount     int          `json:"dispatchCount"`
-		ActivationID      int          `json:"activationId"`
-		Action            string       `json:"action"`
-		Status            StatusValue  `json:"status"`
-		Network           NetworkValue `json:"network"`
-		Estimate          string       `json:"estimate"`
-		CreatedBy         string       `json:"createdBy"`
-		CreateDate        time.Time    `json:"createDate"`
-		ActivationConfigs []struct {
-			ConfigID              int    `json:"configId"`
-			ConfigName            string `json:"configName"`
-			ConfigVersion         int    `json:"configVersion"`
-			PreviousConfigVersion int    `json:"previousConfigVersion"`
-		} `json:"activationConfigs"`
+		DispatchCount     int                            `json:"dispatchCount"`
+		ActivationID      int                            `json:"activationId"`
+		Action            string                         `json:"action"`
+		Status            StatusValue                    `json:"status"`
+		Network           NetworkValue                   `json:"network"`
+		Estimate          string                         `json:"estimate"`
+		CreatedBy         string                         `json:"createdBy"`
+		CreateDate        time.Time                      `json:"createDate"`
+		ActivationConfigs []ActivationConfigResponseItem `json:"activationConfigs"`
 	}
 
-	// ActivationConfigs describes a specific configuration version to be activated or deactivated.
-	ActivationConfigs struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
+	// ActivationConfigRequestItem describes a specific configuration version to be activated or deactivated.
+	ActivationConfigRequestItem struct {
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+	}
+
+	// ActivationConfigResponseItem is used in responses that include activation configuration details.
+	ActivationConfigResponseItem struct {
+		ConfigID              int64  `json:"configId"`
+		ConfigName            string `json:"configName"`
+		ConfigVersion         int64  `json:"configVersion"`
+		PreviousConfigVersion int    `json:"previousConfigVersion"`
 	}
 
 	// RemoveActivationsRequest is used to request deactivation of one or more configurations.
 	RemoveActivationsRequest struct {
-		ActivationID       int      `json:"-"`
-		Action             string   `json:"action"`
-		Network            string   `json:"network"`
-		Note               string   `json:"note"`
-		NotificationEmails []string `json:"notificationEmails"`
-		ActivationConfigs  []struct {
-			ConfigID      int `json:"configId"`
-			ConfigVersion int `json:"configVersion"`
-		} `json:"activationConfigs"`
+		ActivationID       int                           `json:"-"`
+		Action             string                        `json:"action"`
+		Network            string                        `json:"network"`
+		Note               string                        `json:"note"`
+		NotificationEmails []string                      `json:"notificationEmails"`
+		ActivationConfigs  []ActivationConfigRequestItem `json:"activationConfigs"`
 	}
 
 	// RemoveActivationsResponse is returned from a call to RemoveActivations.
 	RemoveActivationsResponse struct {
-		DispatchCount     int          `json:"dispatchCount"`
-		ActivationID      int          `json:"activationId"`
-		Action            string       `json:"action"`
-		Status            StatusValue  `json:"status"`
-		Network           NetworkValue `json:"network"`
-		Estimate          string       `json:"estimate"`
-		CreatedBy         string       `json:"createdBy"`
-		CreateDate        time.Time    `json:"createDate"`
-		ActivationConfigs []struct {
-			ConfigID              int    `json:"configId"`
-			ConfigName            string `json:"configName"`
-			ConfigVersion         int    `json:"configVersion"`
-			PreviousConfigVersion int    `json:"previousConfigVersion"`
-		} `json:"activationConfigs"`
+		DispatchCount     int                            `json:"dispatchCount"`
+		ActivationID      int                            `json:"activationId"`
+		Action            string                         `json:"action"`
+		Status            StatusValue                    `json:"status"`
+		Network           NetworkValue                   `json:"network"`
+		Estimate          string                         `json:"estimate"`
+		CreatedBy         string                         `json:"createdBy"`
+		CreateDate        time.Time                      `json:"createDate"`
+		ActivationConfigs []ActivationConfigResponseItem `json:"activationConfigs"`
 	}
 )
 

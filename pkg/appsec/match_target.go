@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -41,177 +41,167 @@ type (
 
 	// GetMatchTargetsRequest is used to retrieve the match targets for a configuration.
 	GetMatchTargetsRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// GetMatchTargetsResponse is returned from a call to GetMatchTargets.
 	GetMatchTargetsResponse struct {
-		MatchTargets struct {
-			APITargets []struct {
-				Type string `json:"type,omitempty"`
-				Apis []struct {
-					ID   int    `json:"id"`
-					Name string `json:"name"`
-				} `json:"apis"`
-				Sequence      int `json:"sequence"`
-				TargetID      int `json:"targetId"`
-				ConfigID      int `json:"configId,omitempty"`
-				ConfigVersion int `json:"configVersion,omitempty"`
+		MatchTargets GetMatchTargetsResponseMatchTargets `json:"matchTargets,omitempty"`
+	}
 
-				SecurityPolicy struct {
-					PolicyID string `json:"policyId,omitempty"`
-				} `json:"securityPolicy,omitempty"`
+	// GetMatchTargetsResponseMatchTargets contains API and website target lists.
+	GetMatchTargetsResponseMatchTargets struct {
+		APITargets     []GetMatchTargetsResponseMatchTargetsAPITargetsItem     `json:"apiTargets,omitempty"`
+		WebsiteTargets []GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem `json:"websiteTargets,omitempty"`
+	}
 
-				BypassNetworkLists []struct {
-					Name string `json:"name,omitempty"`
-					ID   string `json:"id,omitempty"`
-				} `json:"bypassNetworkLists,omitempty"`
-			} `json:"apiTargets,omitempty"`
-			WebsiteTargets []struct {
-				ConfigID                     int              `json:"configId,omitempty"`
-				ConfigVersion                int              `json:"configVersion,omitempty"`
-				DefaultFile                  string           `json:"defaultFile,omitempty"`
-				IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch,omitempty"`
-				IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-				Sequence                     int              `json:"-"`
-				TargetID                     int              `json:"targetId,omitempty"`
-				Type                         string           `json:"type,omitempty"`
-				FileExtensions               []string         `json:"fileExtensions,omitempty"`
-				FilePaths                    []string         `json:"filePaths,omitempty"`
-				Hostnames                    []string         `json:"hostnames,omitempty"`
-				SecurityPolicy               struct {
-					PolicyID string `json:"policyId,omitempty"`
-				} `json:"securityPolicy,omitempty"`
-				BypassNetworkLists []struct {
-					Name string `json:"name,omitempty"`
-					ID   string `json:"id,omitempty"`
-				} `json:"bypassNetworkLists,omitempty"`
-			} `json:"websiteTargets,omitempty"`
-		} `json:"matchTargets,omitempty"`
+	// GetMatchTargetsResponseMatchTargetsAPITargetsItem represents an API match target item.
+	GetMatchTargetsResponseMatchTargetsAPITargetsItem struct {
+		Type               string                         `json:"type,omitempty"`
+		Apis               []MatchTargetAPIItem           `json:"apis"`
+		Sequence           int                            `json:"sequence"`
+		TargetID           int                            `json:"targetId"`
+		ConfigID           int64                          `json:"configId,omitempty"`
+		ConfigVersion      int64                          `json:"configVersion,omitempty"`
+		SecurityPolicy     MatchTargetSecurityPolicy      `json:"securityPolicy,omitempty"`
+		BypassNetworkLists []MatchTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
+	}
+
+	// GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem represents a website match target item.
+	GetMatchTargetsResponseMatchTargetsWebsiteTargetsItem struct {
+		ConfigID                     int64                          `json:"configId,omitempty"`
+		ConfigVersion                int64                          `json:"configVersion,omitempty"`
+		DefaultFile                  string                         `json:"defaultFile,omitempty"`
+		IsNegativeFileExtensionMatch bool                           `json:"isNegativeFileExtensionMatch,omitempty"`
+		IsNegativePathMatch          *json.RawMessage               `json:"isNegativePathMatch,omitempty"`
+		Sequence                     int                            `json:"sequence"`
+		TargetID                     int                            `json:"targetId,omitempty"`
+		Type                         string                         `json:"type,omitempty"`
+		FileExtensions               []string                       `json:"fileExtensions,omitempty"`
+		FilePaths                    []string                       `json:"filePaths,omitempty"`
+		Hostnames                    []string                       `json:"hostnames,omitempty"`
+		SecurityPolicy               MatchTargetSecurityPolicy      `json:"securityPolicy,omitempty"`
+		BypassNetworkLists           []MatchTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
 	}
 
 	// GetMatchTargetRequest is used to retrieve a match target.
 	GetMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// GetMatchTargetResponse is returned from a call to GetMatchTarget.
 	GetMatchTargetResponse struct {
-		Type string `json:"type,omitempty"`
-		Apis []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis,omitempty"`
-		DefaultFile                  string           `json:"defaultFile,omitempty"`
-		Hostnames                    []string         `json:"hostnames,omitempty"`
-		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch,omitempty"`
-		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-		FilePaths                    []string         `json:"filePaths,omitempty"`
-		FileExtensions               []string         `json:"fileExtensions,omitempty"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId,omitempty"`
-		} `json:"securityPolicy,omitempty"`
-		Sequence           int `json:"-"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name,omitempty"`
-			ID   string `json:"id,omitempty"`
-		} `json:"bypassNetworkLists,omitempty"`
+		Type                         string                         `json:"type,omitempty"`
+		Apis                         []MatchTargetAPIItem           `json:"apis,omitempty"`
+		DefaultFile                  string                         `json:"defaultFile,omitempty"`
+		Hostnames                    []string                       `json:"hostnames,omitempty"`
+		IsNegativeFileExtensionMatch bool                           `json:"isNegativeFileExtensionMatch,omitempty"`
+		IsNegativePathMatch          *json.RawMessage               `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string                       `json:"filePaths,omitempty"`
+		FileExtensions               []string                       `json:"fileExtensions,omitempty"`
+		SecurityPolicy               MatchTargetSecurityPolicy      `json:"securityPolicy,omitempty"`
+		Sequence                     int                            `json:"sequence"`
+		TargetID                     int                            `json:"targetId"`
+		BypassNetworkLists           []MatchTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
 	}
 
 	// CreateMatchTargetRequest is used to create a match target.
 	CreateMatchTargetRequest struct {
 		Type           string          `json:"type"`
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// CreateMatchTargetResponse is returned from a call to CreateMatchTarget.
 	CreateMatchTargetResponse struct {
-		MType string `json:"type"`
-		Apis  []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis,omitempty"`
-		DefaultFile                  string           `json:"defaultFile"`
-		Hostnames                    []string         `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-		FilePaths                    []string         `json:"filePaths"`
-		FileExtensions               []string         `json:"fileExtensions"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"-"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+		MType                        string                      `json:"type"`
+		Apis                         []MatchTargetAPIItem        `json:"apis,omitempty"`
+		DefaultFile                  string                      `json:"defaultFile"`
+		Hostnames                    []string                    `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool                        `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          *json.RawMessage            `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string                    `json:"filePaths"`
+		FileExtensions               []string                    `json:"fileExtensions"`
+		SecurityPolicy               MatchTargetSecurityPolicyID `json:"securityPolicy"`
+		Sequence                     int                         `json:"sequence"`
+		TargetID                     int                         `json:"targetId"`
+		BypassNetworkLists           []BypassNetworkList         `json:"bypassNetworkLists"`
 	}
 
 	// UpdateMatchTargetRequest is used to modify an existing match target.
 	UpdateMatchTargetRequest struct {
-		ConfigID       int             `json:"configId"`
-		ConfigVersion  int             `json:"configVersion"`
+		ConfigID       int64           `json:"configId"`
+		ConfigVersion  int64           `json:"configVersion"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 		TargetID       int             `json:"targetId"`
 	}
 
 	// UpdateMatchTargetResponse is returned from a call to UpdateMatchTarget.
 	UpdateMatchTargetResponse struct {
-		Type                         string           `json:"type"`
-		ConfigID                     int              `json:"configId"`
-		ConfigVersion                int              `json:"configVersion"`
-		DefaultFile                  string           `json:"defaultFile"`
-		Hostnames                    []string         `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool             `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          *json.RawMessage `json:"isNegativePathMatch,omitempty"`
-		FilePaths                    []string         `json:"filePaths"`
-		FileExtensions               []string         `json:"fileExtensions"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"-"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+		Type                         string                      `json:"type"`
+		ConfigID                     int64                       `json:"configId"`
+		ConfigVersion                int64                       `json:"configVersion"`
+		DefaultFile                  string                      `json:"defaultFile"`
+		Hostnames                    []string                    `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool                        `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          *json.RawMessage            `json:"isNegativePathMatch,omitempty"`
+		FilePaths                    []string                    `json:"filePaths"`
+		FileExtensions               []string                    `json:"fileExtensions"`
+		SecurityPolicy               MatchTargetSecurityPolicyID `json:"securityPolicy"`
+		Sequence                     int                         `json:"sequence"`
+		TargetID                     int                         `json:"targetId"`
+		BypassNetworkLists           []BypassNetworkList         `json:"bypassNetworkLists"`
 	}
 
 	// RemoveMatchTargetRequest is used to remove a match target.
 	RemoveMatchTargetRequest struct {
-		ConfigID      int `json:"configId"`
-		ConfigVersion int `json:"configVersion"`
-		TargetID      int `json:"targetId"`
+		ConfigID      int64 `json:"configId"`
+		ConfigVersion int64 `json:"configVersion"`
+		TargetID      int   `json:"targetId"`
 	}
 
 	// RemoveMatchTargetResponse is returned from a call to RemoveMatchTarget.
 	RemoveMatchTargetResponse struct {
-		Type                         string   `json:"type"`
-		ConfigID                     int      `json:"configId"`
-		ConfigVersion                int      `json:"configVersion"`
-		DefaultFile                  string   `json:"defaultFile"`
-		Hostnames                    []string `json:"hostnames"`
-		IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-		IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-		FilePaths                    []string `json:"filePaths"`
-		FileExtensions               []string `json:"fileExtensions"`
-		SecurityPolicy               struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence           int `json:"sequence"`
-		TargetID           int `json:"targetId"`
-		BypassNetworkLists []struct {
-			Name string `json:"name"`
-			ID   string `json:"id"`
-		} `json:"bypassNetworkLists"`
+		Type                         string                      `json:"type"`
+		ConfigID                     int64                       `json:"configId"`
+		ConfigVersion                int64                       `json:"configVersion"`
+		DefaultFile                  string                      `json:"defaultFile"`
+		Hostnames                    []string                    `json:"hostnames"`
+		IsNegativeFileExtensionMatch bool                        `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          bool                        `json:"isNegativePathMatch"`
+		FilePaths                    []string                    `json:"filePaths"`
+		FileExtensions               []string                    `json:"fileExtensions"`
+		SecurityPolicy               MatchTargetSecurityPolicyID `json:"securityPolicy"`
+		Sequence                     int                         `json:"sequence"`
+		TargetID                     int                         `json:"targetId"`
+		BypassNetworkLists           []BypassNetworkList         `json:"bypassNetworkLists"`
+	}
+
+	// MatchTargetAPIItem represents an API endpoint in a match target.
+	MatchTargetAPIItem struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// MatchTargetSecurityPolicy represents an optional security policy reference.
+	MatchTargetSecurityPolicy struct {
+		PolicyID string `json:"policyId,omitempty"`
+	}
+
+	// MatchTargetSecurityPolicyID represents a required security policy reference.
+	MatchTargetSecurityPolicyID struct {
+		PolicyID string `json:"policyId"`
+	}
+
+	// MatchTargetBypassNetworkList describes an optional network list used in match target bypasses.
+	MatchTargetBypassNetworkList struct {
+		Name string `json:"name,omitempty"`
+		ID   string `json:"id,omitempty"`
 	}
 
 	// BypassNetworkList describes a network list used in the bypass network lists for the specified configuration.
@@ -227,22 +217,14 @@ type (
 
 	// AutoGenerated is currently unused.
 	AutoGenerated struct {
-		Type string `json:"type"`
-		Apis []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"apis"`
-		BypassNetworkLists []struct {
-			ID   string `json:"id"`
-			Name string `json:"name"`
-		} `json:"bypassNetworkLists"`
-		ConfigID       int `json:"configId"`
-		ConfigVersion  int `json:"configVersion"`
-		SecurityPolicy struct {
-			PolicyID string `json:"policyId"`
-		} `json:"securityPolicy"`
-		Sequence int `json:"-"`
-		TargetID int `json:"targetId"`
+		Type               string                      `json:"type"`
+		Apis               []MatchTargetAPIItem        `json:"apis"`
+		BypassNetworkLists []BypassNetworkList         `json:"bypassNetworkLists"`
+		ConfigID           int64                       `json:"configId"`
+		ConfigVersion      int64                       `json:"configVersion"`
+		SecurityPolicy     MatchTargetSecurityPolicyID `json:"securityPolicy"`
+		Sequence           int                         `json:"-"`
+		TargetID           int                         `json:"targetId"`
 	}
 )
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -34,8 +34,8 @@ type (
 
 	// GetSlowPostProtectionRequest is used to retrieve the slow post protecton setting for a policy.
 	GetSlowPostProtectionRequest struct {
-		ConfigID              int    `json:"-"`
-		Version               int    `json:"-"`
+		ConfigID              int64  `json:"-"`
+		Version               int64  `json:"-"`
 		PolicyID              string `json:"-"`
 		ApplySlowPostControls bool   `json:"applySlowPostControls"`
 	}
@@ -46,8 +46,8 @@ type (
 	// GetSlowPostProtectionsRequest is used to retrieve the slow post protecton setting for a policy.
 	// Deprecated: this struct will be removed in a future release.
 	GetSlowPostProtectionsRequest struct {
-		ConfigID              int    `json:"-"`
-		Version               int    `json:"-"`
+		ConfigID              int64  `json:"-"`
+		Version               int64  `json:"-"`
 		PolicyID              string `json:"-"`
 		ApplySlowPostControls bool   `json:"applySlowPostControls"`
 	}
@@ -58,8 +58,8 @@ type (
 
 	// UpdateSlowPostProtectionRequest is used to modify the slow post protection setting.
 	UpdateSlowPostProtectionRequest struct {
-		ConfigID              int    `json:"-"`
-		Version               int    `json:"-"`
+		ConfigID              int64  `json:"-"`
+		Version               int64  `json:"-"`
 		PolicyID              string `json:"-"`
 		ApplySlowPostControls bool   `json:"applySlowPostControls"`
 	}

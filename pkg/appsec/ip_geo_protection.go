@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -34,8 +34,8 @@ type (
 
 	// GetIPGeoProtectionRequest is used to retrieve the IPGeo protection settings.
 	GetIPGeoProtectionRequest struct {
-		ConfigID                      int    `json:"-"`
-		Version                       int    `json:"-"`
+		ConfigID                      int64  `json:"-"`
+		Version                       int64  `json:"-"`
 		PolicyID                      string `json:"-"`
 		ApplyApplicationLayerControls bool   `json:"applyNetworkLayerControls"`
 	}
@@ -46,8 +46,8 @@ type (
 	// GetIPGeoProtectionsRequest is used to retrieve the IPGeo protection settings.
 	// Deprecated: this struct will be removed in a future release.
 	GetIPGeoProtectionsRequest struct {
-		ConfigID                  int    `json:"-"`
-		Version                   int    `json:"-"`
+		ConfigID                  int64  `json:"-"`
+		Version                   int64  `json:"-"`
 		PolicyID                  string `json:"-"`
 		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
 	}
@@ -58,8 +58,8 @@ type (
 
 	// UpdateIPGeoProtectionRequest is used to modify the IPGeo protection settings.
 	UpdateIPGeoProtectionRequest struct {
-		ConfigID                  int    `json:"-"`
-		Version                   int    `json:"-"`
+		ConfigID                  int64  `json:"-"`
+		Version                   int64  `json:"-"`
 		PolicyID                  string `json:"-"`
 		ApplyNetworkLayerControls bool   `json:"applyNetworkLayerControls"`
 	}

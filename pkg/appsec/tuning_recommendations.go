@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,16 +31,16 @@ type (
 
 	// GetTuningRecommendationsRequest is used to retrieve tuning recommendations for a security policy.
 	GetTuningRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		RulesetType RulesetType
 	}
 
 	// GetAttackGroupRecommendationsRequest is used to retrieve tuning recommendations for a specific attack group.
 	GetAttackGroupRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		Group       string
 		RulesetType RulesetType
@@ -48,8 +48,8 @@ type (
 
 	// GetRuleRecommendationsRequest is used to retrieve tuning recommendations for a specific rule.
 	GetRuleRecommendationsRequest struct {
-		ConfigID    int
-		Version     int
+		ConfigID    int64
+		Version     int64
 		PolicyID    string
 		RuleID      int
 		RulesetType RulesetType
@@ -85,7 +85,10 @@ type (
 	}
 
 	// Evidences is used to describe evidences for a recommendation.
-	Evidences []struct {
+	Evidences []Evidence
+
+	// Evidence describes host, path, and user data evidences for a recommendation.
+	Evidence struct {
 		HostEvidences     []string `json:"hostEvidences,omitempty"`
 		PathEvidences     []string `json:"pathEvidences,omitempty"`
 		UserDataEvidences []string `json:"userDataEvidences,omitempty"`

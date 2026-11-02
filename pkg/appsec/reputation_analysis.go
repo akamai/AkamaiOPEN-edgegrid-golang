@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,15 +31,15 @@ type (
 
 	// GetReputationAnalysisRequest is used to retrieve the reputation analysis settings for a security policy.
 	GetReputationAnalysisRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 	}
 
 	// GetReputationAnalysisResponse is returned from a call to GetReputationAnalysis.
 	GetReputationAnalysisResponse struct {
-		ConfigID                           int    `json:"-"`
-		Version                            int    `json:"-"`
+		ConfigID                           int64  `json:"-"`
+		Version                            int64  `json:"-"`
 		PolicyID                           string `json:"-"`
 		ForwardToHTTPHeader                bool   `json:"forwardToHTTPHeader"`
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
@@ -47,8 +47,8 @@ type (
 
 	// UpdateReputationAnalysisRequest is used to modify the reputation analysis settings for a security poliyc.
 	UpdateReputationAnalysisRequest struct {
-		ConfigID                           int    `json:"-"`
-		Version                            int    `json:"-"`
+		ConfigID                           int64  `json:"-"`
+		Version                            int64  `json:"-"`
 		PolicyID                           string `json:"-"`
 		ForwardToHTTPHeader                bool   `json:"forwardToHTTPHeader"`
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`
@@ -62,8 +62,8 @@ type (
 
 	// RemoveReputationAnalysisRequest is used to remove the reputation analysis settings for a security policy.
 	RemoveReputationAnalysisRequest struct {
-		ConfigID                           int    `json:"-"`
-		Version                            int    `json:"-"`
+		ConfigID                           int64  `json:"-"`
+		Version                            int64  `json:"-"`
 		PolicyID                           string `json:"-"`
 		ForwardToHTTPHeader                bool   `json:"forwardToHTTPHeader"`
 		ForwardSharedIPToHTTPHeaderAndSIEM bool   `json:"forwardSharedIPToHTTPHeaderAndSIEM"`

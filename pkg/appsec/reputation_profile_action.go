@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,8 +31,8 @@ type (
 
 	// GetReputationProfileActionsRequest is used to retrieve the list of reputation profiles and their associated actions.
 	GetReputationProfileActionsRequest struct {
-		ConfigID            int    `json:"configId"`
-		Version             int    `json:"version"`
+		ConfigID            int64  `json:"configId"`
+		Version             int64  `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
 		Action              string `json:"action"`
@@ -40,16 +40,19 @@ type (
 
 	// GetReputationProfileActionsResponse is returned from a call to GetReputationProfileActions.
 	GetReputationProfileActionsResponse struct {
-		ReputationProfiles []struct {
-			Action string `json:"action,omitempty"`
-			ID     int    `json:"id,omitempty"`
-		} `json:"reputationProfiles,omitempty"`
+		ReputationProfiles []GetReputationProfileActionsResponseReputationProfile `json:"reputationProfiles,omitempty"`
+	}
+
+	// GetReputationProfileActionsResponseReputationProfile describes a reputation profile action item returned in GetReputationProfileActionsResponse.
+	GetReputationProfileActionsResponseReputationProfile struct {
+		Action string `json:"action,omitempty"`
+		ID     int    `json:"id,omitempty"`
 	}
 
 	// GetReputationProfileActionRequest is used to retrieve the details for a specific reputation profile.
 	GetReputationProfileActionRequest struct {
-		ConfigID            int    `json:"configId"`
-		Version             int    `json:"version"`
+		ConfigID            int64  `json:"configId"`
+		Version             int64  `json:"version"`
 		PolicyID            string `json:"policyId"`
 		ReputationProfileID int    `json:"id"`
 		Action              string `json:"action"`
@@ -62,8 +65,8 @@ type (
 
 	// UpdateReputationProfileActionRequest is used to modify the details for a specific reputation profile.
 	UpdateReputationProfileActionRequest struct {
-		ConfigID            int    `json:"-"`
-		Version             int    `json:"-"`
+		ConfigID            int64  `json:"-"`
+		Version             int64  `json:"-"`
 		PolicyID            string `json:"-"`
 		ReputationProfileID int    `json:"-"`
 		Action              string `json:"action"`
@@ -75,9 +78,7 @@ type (
 	}
 
 	// ReputationProfileActionPost is currently unused.
-	ReputationProfileActionPost struct {
-		Action string `json:"action"`
-	}
+	ReputationProfileActionPost UpdateReputationProfileActionResponse
 )
 
 // Validate validates a GetReputationProfileActionRequest.

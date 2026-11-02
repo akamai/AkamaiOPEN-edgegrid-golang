@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -190,11 +190,10 @@ func (c *cloudaccess) GetAccessKeyStatus(ctx context.Context, params GetAccessKe
 	logger.Debug("GetAccessKeyStatus")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetAccessKeyStatus, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetAccessKeyStatus, ErrStructValidation, err)
 	}
 
-	getURL := fmt.Sprintf("/cam/v1/access-key-create-requests/%d", params.RequestID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, getURL, nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-key-create-requests/%d", params.RequestID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAccessKeyStatus request: %w", err)
 	}
@@ -218,21 +217,18 @@ func (c *cloudaccess) CreateAccessKey(ctx context.Context, accessKey CreateAcces
 	logger.Debug("CreateAccessKey")
 
 	if err := accessKey.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateAccessKey, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateAccessKey, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cam/v1/access-keys")
-	if err != nil {
-		return nil, err
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/cam/v1/access-keys").
+		WithBody(accessKey).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create CreateAccessKey request: %w", err)
 	}
 
 	var result CreateAccessKeyResponse
-	resp, err := c.Exec(req, &result, accessKey)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("CreateAccessKey request failed: %w", err)
 	}
@@ -252,15 +248,10 @@ func (c *cloudaccess) GetAccessKey(ctx context.Context, params AccessKeyRequest)
 	logger.Debug("GetAccessKey")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetAccessKey, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetAccessKey, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/access-keys/%d", params.AccessKeyUID))
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys/%d", params.AccessKeyUID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetAccessKey request: %w", err)
 	}
@@ -284,17 +275,9 @@ func (c *cloudaccess) ListAccessKeys(ctx context.Context, params ListAccessKeysR
 	logger := c.Log(ctx)
 	logger.Debug("ListAccessKeys")
 
-	uri, err := url.Parse("/cam/v1/access-keys")
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-	q := uri.Query()
-	if params.VersionGUID != "" {
-		q.Add("versionGuid", params.VersionGUID)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/cam/v1/access-keys").
+		AddQueryParamIf("versionGuid", params.VersionGUID, params.VersionGUID != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create ListAccessKeys request: %w", err)
 	}
@@ -318,22 +301,17 @@ func (c *cloudaccess) DeleteAccessKey(ctx context.Context, params AccessKeyReque
 	logger.Debug("DeleteAccessKey")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeleteAccessKey, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrDeleteAccessKey, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/access-keys/%d", params.AccessKeyUID))
+	req, err := request.NewDelete(ctx, "/cam/v1/access-keys/%d", params.AccessKeyUID).Build()
 	if err != nil {
-		return fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("failed to create DeleteAccessKey request: %s", err.Error())
+		return fmt.Errorf("failed to create DeleteAccessKey request: %w", err)
 	}
 
 	resp, err := c.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("DeleteAccessKey request failed: %s", err.Error())
+		return fmt.Errorf("DeleteAccessKey request failed: %w", err)
 	}
 	defer session.CloseResponseBody(resp)
 
@@ -349,24 +327,21 @@ func (c *cloudaccess) UpdateAccessKey(ctx context.Context, accessKey UpdateAcces
 	logger.Debug("UpdateAccessKey")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateAccessKey, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateAccessKey, ErrStructValidation, err)
 	}
 	if err := accessKey.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateAccessKey, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateAccessKey, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cam/v1/access-keys/%d", params.AccessKeyUID))
-	if err != nil {
-		return nil, fmt.Errorf("failed to parse url: %w", err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/cam/v1/access-keys/%d", params.AccessKeyUID).
+		WithBody(accessKey).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create UpdateAccessKey request: %w", err)
 	}
 
 	var result UpdateAccessKeyResponse
-	resp, err := c.Exec(req, &result, accessKey)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("UpdateAccessKey request failed: %w", err)
 	}

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/texts"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/texts"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -127,40 +127,26 @@ func (m *mtlskeystore) ListAccountCACertificates(ctx context.Context, params Lis
 	logger.Debug("ListAccountCACertificates")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListAccountCACertificates, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListAccountCACertificates, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/mtls-origin-keystore/v1/ca-certificates")
+	req, err := request.NewGet(ctx, "/mtls-origin-keystore/v1/ca-certificates").
+		AddQueryParamIf("status", texts.JoinStringBased(params.Status, ","), len(params.Status) > 0).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListAccountCACertificates, err)
-	}
-
-	if len(params.Status) > 0 {
-		uri.RawQuery = statusesToQueryString(params.Status)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListAccountCACertificates, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListAccountCACertificates, err)
 	}
 
 	var result ListAccountCACertificatesResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListAccountCACertificates, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListAccountCACertificates, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListAccountCACertificates, m.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListAccountCACertificates, m.Error(resp))
 	}
 
 	return &result, nil
-}
-
-func statusesToQueryString(statuses []CertificateStatus) string {
-	status := texts.JoinStringBased(statuses, ",")
-	q := url.Values{}
-	q.Set("status", status)
-	return q.Encode()
 }

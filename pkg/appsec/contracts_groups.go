@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -21,8 +21,8 @@ type (
 
 	// GetContractsGroupsRequest is used to retrieve the list of contracts and groups for your account.
 	GetContractsGroupsRequest struct {
-		ConfigID   int    `json:"-"`
-		Version    int    `json:"-"`
+		ConfigID   int64  `json:"-"`
+		Version    int64  `json:"-"`
 		PolicyID   string `json:"-"`
 		ContractID string `json:"-"`
 		GroupID    int    `json:"-"`
@@ -30,11 +30,14 @@ type (
 
 	// GetContractsGroupsResponse is returned from a call to GetContractsGroups.
 	GetContractsGroupsResponse struct {
-		ContractGroups []struct {
-			ContractID  string `json:"contractId"`
-			DisplayName string `json:"displayName"`
-			GroupID     int    `json:"groupId"`
-		} `json:"contract_groups"`
+		ContractGroups []ContractGroup `json:"contract_groups"`
+	}
+
+	// ContractGroup represents an individual contract and group item.
+	ContractGroup struct {
+		ContractID  string `json:"contractId"`
+		DisplayName string `json:"displayName"`
+		GroupID     int    `json:"groupId"`
 	}
 )
 

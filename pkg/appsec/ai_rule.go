@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -44,7 +44,7 @@ type (
 	// ListAIRulesRequest is used to retrieve AI rules for a configuration and policy.
 	ListAIRulesRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 	}
 
@@ -99,7 +99,7 @@ type (
 	// UpdateAIRulesStatusRequest is used to enable or disable AI rules for a policy.
 	UpdateAIRulesStatusRequest struct {
 		ConfigID int64
-		Version  int
+		Version  int64
 		PolicyID string
 		Body     UpdateAIRulesStatusRequestBody
 	}
@@ -115,7 +115,7 @@ type (
 	// GetAIRuleActionRequest is used to retrieve the action for a specific AI rule version.
 	GetAIRuleActionRequest struct {
 		ConfigID    int64
-		Version     int
+		Version     int64
 		PolicyID    string
 		RuleID      int64
 		RuleVersion int64
@@ -124,7 +124,7 @@ type (
 	// UpdateAIRuleActionRequest is used to set the action for a specific AI rule.
 	UpdateAIRuleActionRequest struct {
 		ConfigID    int64
-		Version     int
+		Version     int64
 		PolicyID    string
 		RuleID      int64
 		RuleVersion int64

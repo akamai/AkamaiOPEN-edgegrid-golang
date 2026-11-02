@@ -7,8 +7,8 @@ import (
 	"net/http"
 	"reflect"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -50,7 +50,7 @@ type (
 	// GetCustomRulesUsageRequest is used to return the custom rule usages for config version.
 	GetCustomRulesUsageRequest struct {
 		ConfigID    int64
-		Version     int
+		Version     int64
 		RequestBody RuleIDs
 	}
 
@@ -84,28 +84,31 @@ type (
 
 	// GetCustomRulesRequest is used to retrieve the custom rules for a configuration.
 	GetCustomRulesRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"-"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"-"`
 	}
 
 	// GetCustomRulesResponse is returned from a call to GetCustomRules.
 	GetCustomRulesResponse struct {
-		CustomRules []struct {
-			ID                  int                        `json:"id"`
-			Link                string                     `json:"link"`
-			Name                string                     `json:"name"`
-			Status              string                     `json:"status"`
-			Version             int                        `json:"version"`
-			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        *int                       `json:"samplingRate,omitempty"`
-			StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
-		} `json:"customRules"`
+		CustomRules []GetCustomRulesResponseCustomRuleItem `json:"customRules"`
+	}
+
+	// GetCustomRulesResponseCustomRuleItem represents an individual custom rule in GetCustomRulesResponse.
+	GetCustomRulesResponseCustomRuleItem struct {
+		ID                  int                        `json:"id"`
+		Link                string                     `json:"link"`
+		Name                string                     `json:"name"`
+		Status              string                     `json:"status"`
+		Version             int64                      `json:"version"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        *int                       `json:"samplingRate,omitempty"`
+		StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
 	}
 
 	// GetCustomRuleRequest is used to retrieve the details of a custom rule.
 	GetCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"id,omitempty"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"id,omitempty"`
 	}
 
 	// GetCustomRuleResponse is returned from a call to GetCustomRule.
@@ -113,33 +116,36 @@ type (
 
 	// CustomRuleResponse is returned from calls to GetCustomRule, UpdateCustomRule, and DeleteCustomRule.
 	CustomRuleResponse struct {
-		ID            int      `json:"-"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description,omitempty"`
-		Version       int      `json:"-"`
-		RuleActivated bool     `json:"-"`
-		Structured    bool     `json:"-"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Name                  *json.RawMessage `json:"name,omitempty"`
-			NameCase              *bool            `json:"nameCase,omitempty"`
-			NameWildcard          *bool            `json:"nameWildcard,omitempty"`
-			PositiveMatch         bool             `json:"positiveMatch"`
-			Type                  string           `json:"type"`
-			Value                 *json.RawMessage `json:"value,omitempty"`
-			ValueCase             *bool            `json:"valueCase,omitempty"`
-			ValueExactMatch       *bool            `json:"valueExactMatch,omitempty"`
-			ValueIgnoreSegment    *bool            `json:"valueIgnoreSegment,omitempty"`
-			ValueNormalize        *bool            `json:"valueNormalize,omitempty"`
-			ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
-			ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
-			UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
-		} `json:"conditions"`
+		ID                  int                        `json:"-"`
+		Name                string                     `json:"name"`
+		Description         string                     `json:"description,omitempty"`
+		Version             int64                      `json:"-"`
+		RuleActivated       bool                       `json:"-"`
+		Structured          bool                       `json:"-"`
+		Tag                 []string                   `json:"tag"`
+		Conditions          []CustomRuleCondition      `json:"conditions"`
 		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
 		Operation           string                     `json:"operation,omitempty"`
 		StagingOnly         *bool                      `json:"stagingOnly,omitempty"`
+	}
+
+	// CustomRuleCondition describes a condition item in a custom rule.
+	CustomRuleCondition struct {
+		Name                  *json.RawMessage `json:"name,omitempty"`
+		NameCase              *bool            `json:"nameCase,omitempty"`
+		NameWildcard          *bool            `json:"nameWildcard,omitempty"`
+		PositiveMatch         bool             `json:"positiveMatch"`
+		Type                  string           `json:"type"`
+		Value                 *json.RawMessage `json:"value,omitempty"`
+		ValueCase             *bool            `json:"valueCase,omitempty"`
+		ValueExactMatch       *bool            `json:"valueExactMatch,omitempty"`
+		ValueIgnoreSegment    *bool            `json:"valueIgnoreSegment,omitempty"`
+		ValueNormalize        *bool            `json:"valueNormalize,omitempty"`
+		ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
+		ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
+		UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
 	}
 
 	// CustomRuleEffectivePeriod defines the period during which a custom rule is active as well as its current status.
@@ -151,35 +157,21 @@ type (
 
 	// CreateCustomRuleRequest is used to create a custom rule.
 	CreateCustomRuleRequest struct {
-		ConfigID       int             `json:"configid,omitempty"`
-		Version        int             `json:"version,omitempty"`
+		ConfigID       int64           `json:"configid,omitempty"`
+		Version        int64           `json:"version,omitempty"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
 	// CreateCustomRuleResponse is returned from a call to CreateCustomRule.
 	CreateCustomRuleResponse struct {
-		ID            int      `json:"id,omitempty"`
-		Name          string   `json:"name"`
-		Description   string   `json:"description,omitempty"`
-		Version       int      `json:"-"`
-		RuleActivated bool     `json:"-"`
-		Structured    bool     `json:"-"`
-		Tag           []string `json:"tag"`
-		Conditions    []struct {
-			Name                  *json.RawMessage `json:"name,omitempty"`
-			NameCase              *bool            `json:"nameCase,omitempty"`
-			NameWildcard          *bool            `json:"nameWildcard,omitempty"`
-			PositiveMatch         bool             `json:"positiveMatch"`
-			Type                  string           `json:"type"`
-			Value                 *json.RawMessage `json:"value,omitempty"`
-			ValueCase             *bool            `json:"valueCase,omitempty"`
-			ValueExactMatch       *bool            `json:"valueExactMatch,omitempty"`
-			ValueIgnoreSegment    *bool            `json:"valueIgnoreSegment,omitempty"`
-			ValueNormalize        *bool            `json:"valueNormalize,omitempty"`
-			ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
-			ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
-			UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
-		} `json:"conditions"`
+		ID                  int                        `json:"id,omitempty"`
+		Name                string                     `json:"name"`
+		Description         string                     `json:"description,omitempty"`
+		Version             int64                      `json:"-"`
+		RuleActivated       bool                       `json:"-"`
+		Structured          bool                       `json:"-"`
+		Tag                 []string                   `json:"tag"`
+		Conditions          []CustomRuleCondition      `json:"conditions"`
 		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
 		SamplingRate        int                        `json:"samplingRate,omitempty"`
 		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
@@ -189,9 +181,9 @@ type (
 
 	// UpdateCustomRuleRequest is used to modify an existing custom rule.
 	UpdateCustomRuleRequest struct {
-		ConfigID       int             `json:"configid,omitempty"`
+		ConfigID       int64           `json:"configid,omitempty"`
 		ID             int             `json:"id,omitempty"`
-		Version        int             `json:"version,omitempty"`
+		Version        int64           `json:"version,omitempty"`
 		JsonPayloadRaw json.RawMessage `json:"-"`
 	}
 
@@ -200,8 +192,8 @@ type (
 
 	// RemoveCustomRuleRequest is used to remove a custom rule.
 	RemoveCustomRuleRequest struct {
-		ConfigID int `json:"configid,omitempty"`
-		ID       int `json:"id,omitempty"`
+		ConfigID int64 `json:"configid,omitempty"`
+		ID       int   `json:"id,omitempty"`
 	}
 
 	// RemoveCustomRuleResponse is returned from a call to RemoveCustomRule.

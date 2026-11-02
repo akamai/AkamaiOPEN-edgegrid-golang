@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -19,16 +19,19 @@ type (
 
 	// GetFailoverHostnamesRequest is used to retrieve the failover hostnames for a configuration.
 	GetFailoverHostnamesRequest struct {
-		ConfigID int `json:"-"`
+		ConfigID int64 `json:"-"`
 	}
 
 	// GetFailoverHostnamesResponse is returned from a call to GetFailoverHostnames.
 	GetFailoverHostnamesResponse struct {
-		ConfigID      int `json:"-"`
-		ConfigVersion int `json:"-"`
-		HostnameList  []struct {
-			Hostname string `json:"hostname"`
-		} `json:"hostnameList"`
+		ConfigID      int64              `json:"-"`
+		ConfigVersion int64              `json:"-"`
+		HostnameList  []HostnameListItem `json:"hostnameList"`
+	}
+
+	// HostnameListItem represents an individual hostname item.
+	HostnameListItem struct {
+		Hostname string `json:"hostname"`
 	}
 )
 

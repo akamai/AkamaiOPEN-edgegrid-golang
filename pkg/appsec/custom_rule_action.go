@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,25 +31,19 @@ type (
 
 	// GetCustomRuleActionsRequest is used to retrieve the custom rule actions for a configuration.
 	GetCustomRuleActionsRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 		RuleID   int    `json:"ruleId"`
 	}
 
 	// GetCustomRuleActionsResponse is returned from a call to GetCustomRuleActions.
-	GetCustomRuleActionsResponse []struct {
-		Action                string `json:"action,omitempty"`
-		CanUseAdvancedActions bool   `json:"canUseAdvancedActions,omitempty"`
-		Link                  string `json:"link,omitempty"`
-		Name                  string `json:"name,omitempty"`
-		RuleID                int    `json:"ruleId,omitempty"`
-	}
+	GetCustomRuleActionsResponse []GetCustomRuleActionResponse
 
 	// GetCustomRuleActionRequest is used to retrieve the action for a custom rule.
 	GetCustomRuleActionRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		PolicyID string `json:"policyId"`
 		RuleID   int    `json:"ruleId"`
 	}
@@ -65,8 +59,8 @@ type (
 
 	// UpdateCustomRuleActionRequest is used to modify an existing custom rule.
 	UpdateCustomRuleActionRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		RuleID   int    `json:"-"`
 		Action   string `json:"action"`

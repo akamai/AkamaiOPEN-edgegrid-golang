@@ -10,8 +10,8 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,254 +31,305 @@ type (
 
 	// RapidRules is returned as part of GetExportConfigurationResponse.
 	RapidRules struct {
-		DefaultAction string `json:"defaultAction"`
-		Enabled       bool   `json:"enabled"`
-		ThreatIntel   string `json:"threatIntel"`
-		PolicyRules   []struct {
-			Action             string                  `json:"action"`
-			Lock               bool                    `json:"lock"`
-			RuleID             int                     `json:"ruleId"`
-			RuleVersion        int                     `json:"ruleVersion"`
-			Group              string                  `json:"group"`
-			RulesetVersionID   int                     `json:"rulesetVersionId"`
-			ConditionException *RuleConditionException `json:"conditionException,omitempty"`
-		} `json:"policyRules,omitempty"`
+		DefaultAction string                 `json:"defaultAction"`
+		Enabled       bool                   `json:"enabled"`
+		ThreatIntel   string                 `json:"threatIntel"`
+		PolicyRules   []RapidRulesPolicyRule `json:"policyRules,omitempty"`
+	}
+
+	// RapidRulesPolicyRule represents an individual policy rule in RapidRules.
+	RapidRulesPolicyRule struct {
+		Action             string                  `json:"action"`
+		Lock               bool                    `json:"lock"`
+		RuleID             int                     `json:"ruleId"`
+		RuleVersion        int                     `json:"ruleVersion"`
+		Group              string                  `json:"group"`
+		RulesetVersionID   int                     `json:"rulesetVersionId"`
+		ConditionException *RuleConditionException `json:"conditionException,omitempty"`
 	}
 
 	// GetExportConfigurationRequest is used to call GetExportConfiguration.
 	GetExportConfigurationRequest struct {
-		ConfigID int    `json:"configId"`
-		Version  int    `json:"version"`
+		ConfigID int64  `json:"configId"`
+		Version  int64  `json:"version"`
 		Source   string `json:"source,omitempty"`
 	}
 
 	// EvaluatingSecurityPolicy is returned from a call to GetExportConfiguration.
 	EvaluatingSecurityPolicy struct {
-		EffectiveSecurityControls struct {
-			ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
-			ApplyRateControls             bool `json:"applyRateControls,omitempty"`
-			ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
-		}
-		Hostnames        []string `json:"hostnames,omitempty"`
-		SecurityPolicyID string   `json:"id"`
+		EffectiveSecurityControls EvaluatingSecurityPolicyEffectiveSecurityControls
+		Hostnames                 []string `json:"hostnames,omitempty"`
+		SecurityPolicyID          string   `json:"id"`
+	}
+
+	// EvaluatingSecurityPolicyEffectiveSecurityControls describes effective controls for evaluating policy.
+	EvaluatingSecurityPolicyEffectiveSecurityControls struct {
+		ApplyApplicationLayerControls bool `json:"applyApplicationLayerControls,omitempty"`
+		ApplyRateControls             bool `json:"applyRateControls,omitempty"`
+		ApplySlowPostControls         bool `json:"applySlowPostControls,omitempty"`
 	}
 
 	// GetExportConfigurationResponse is returned from a call to GetExportConfiguration.
 	GetExportConfigurationResponse struct {
-		ConfigID   int    `json:"configId"`
-		ConfigName string `json:"configName"`
-		Version    int    `json:"version"`
-		BasedOn    int    `json:"basedOn"`
-		Staging    struct {
-			Status string `json:"status"`
-		} `json:"staging"`
-		Production struct {
-			Status string `json:"status"`
-		} `json:"production"`
-		TargetProduct   string    `json:"targetProduct"`
-		CreateDate      time.Time `json:"-"`
-		CreatedBy       string    `json:"createdBy"`
-		SelectedHosts   []string  `json:"selectedHosts"`
-		SelectableHosts []string  `json:"selectableHosts"`
-		RatePolicies    []struct {
-			AdditionalMatchOptions []struct {
-				PositiveMatch bool     `json:"positiveMatch"`
-				Type          string   `json:"type"`
-				Values        []string `json:"values"`
-			} `json:"additionalMatchOptions,omitempty"`
-			AllTraffic            bool                         `json:"allTraffic,omitempty"`
-			AverageThreshold      int                          `json:"averageThreshold"`
-			BurstThreshold        int                          `json:"burstThreshold"`
-			BurstWindow           *int                         `json:"burstWindow,omitempty"`
-			ClientIdentifiers     []string                     `json:"clientIdentifiers,omitempty"`
-			Condition             *RatePolicyCondition         `json:"condition,omitempty"`
-			CreateDate            time.Time                    `json:"-"`
-			CounterType           string                       `json:"counterType"`
-			Description           string                       `json:"description,omitempty"`
-			FileExtensions        *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
-			Hosts                 *RatePoliciesHosts           `json:"hosts,omitempty"`
-			Hostnames             []string                     `json:"hostnames,omitempty"`
-			ID                    int                          `json:"id"`
-			MatchType             string                       `json:"matchType"`
-			Name                  string                       `json:"name"`
-			Path                  *RatePoliciesPath            `json:"path,omitempty"`
-			PathMatchType         string                       `json:"pathMatchType,omitempty"`
-			PathURIPositiveMatch  bool                         `json:"pathUriPositiveMatch"`
-			PenaltyBoxDuration    string                       `json:"penaltyBoxDuration"`
-			QueryParameters       *RatePoliciesQueryParameters `json:"queryParameters,omitempty"`
-			RequestType           string                       `json:"requestType"`
-			SameActionOnIpv6      bool                         `json:"sameActionOnIpv6"`
-			Type                  string                       `json:"type"`
-			UpdateDate            time.Time                    `json:"-"`
-			UseXForwardForHeaders bool                         `json:"useXForwardForHeaders"`
-			Used                  bool                         `json:"-"`
-		} `json:"ratePolicies"`
-		ReputationProfiles []struct {
-			Condition       *ConditionReputationProfile `json:"condition,omitempty"`
-			Context         string                      `json:"context,omitempty"`
-			ContextReadable string                      `json:"-"`
+		ConfigID                  int64                                             `json:"configId"`
+		ConfigName                string                                            `json:"configName"`
+		Version                   int64                                             `json:"version"`
+		BasedOn                   int                                               `json:"basedOn"`
+		Staging                   GetExportConfigurationResponseStatus              `json:"staging"`
+		Production                GetExportConfigurationResponseStatus              `json:"production"`
+		TargetProduct             string                                            `json:"targetProduct"`
+		CreateDate                time.Time                                         `json:"-"`
+		CreatedBy                 string                                            `json:"createdBy"`
+		SelectedHosts             []string                                          `json:"selectedHosts"`
+		SelectableHosts           []string                                          `json:"selectableHosts"`
+		RatePolicies              []GetExportConfigurationResponseRatePolicy        `json:"ratePolicies"`
+		ReputationProfiles        []GetExportConfigurationResponseReputationProfile `json:"reputationProfiles"`
+		CustomRules               []GetExportConfigurationResponseCustomRule        `json:"customRules"`
+		Rulesets                  []GetExportConfigurationResponseRuleset           `json:"rulesets"`
+		MatchTargets              GetExportConfigurationResponseMatchTargets        `json:"matchTargets"`
+		SecurityPolicies          []GetExportConfigurationResponseSecurityPolicy    `json:"securityPolicies"`
+		Siem                      *Siemexp                                          `json:"siem,omitempty"`
+		AdvancedOptions           *AdvancedOptionsexp                               `json:"advancedOptions,omitempty"`
+		CustomDenyList            *CustomDenyListexp                                `json:"customDenyList,omitempty"`
+		Evaluating                GetExportConfigurationResponseEvaluating          `json:"evaluating,omitempty"`
+		MalwarePolicies           []MalwarePolicyBody                               `json:"malwarePolicies,omitempty"`
+		CustomBotCategories       []map[string]interface{}                          `json:"customBotCategories,omitempty"`
+		CustomDefinedBots         []map[string]interface{}                          `json:"customDefinedBots,omitempty"`
+		CustomBotCategorySequence []string                                          `json:"customBotCategorySequence,omitempty"`
+		CustomClients             []map[string]interface{}                          `json:"customClients,omitempty"`
+		CustomClientSequence      []string                                          `json:"customClientSequence,omitempty"`
+		ResponseActions           *ResponseActions                                  `json:"responseActions,omitempty"`
+		AdvancedSettings          *AdvancedSettings                                 `json:"advancedSettings,omitempty"`
+		URLProtectionPolicies     []GetURLProtectionPolicyResponse                  `json:"urlProtectionPolicies,omitempty"`
+	}
 
-			Enabled          bool   `json:"-"`
-			ID               int    `json:"id"`
-			Name             string `json:"name"`
-			SharedIPHandling string `json:"sharedIpHandling"`
-			Threshold        int    `json:"threshold"`
-		} `json:"reputationProfiles"`
-		CustomRules []struct {
-			ID            int      `json:"id"`
-			Name          string   `json:"name"`
-			Description   string   `json:"description,omitempty"`
-			Version       int      `json:"-"`
-			RuleActivated bool     `json:"-"`
-			Structured    bool     `json:"-"`
-			Tag           []string `json:"tag,omitempty"`
-			Conditions    []struct {
-				Name                  *json.RawMessage `json:"name,omitempty"`
-				NameCase              *bool            `json:"nameCase,omitempty"`
-				NameWildcard          *bool            `json:"nameWildcard,omitempty"`
-				PositiveMatch         bool             `json:"positiveMatch"`
-				Type                  string           `json:"type"`
-				Value                 *json.RawMessage `json:"value,omitempty"`
-				ValueCase             *bool            `json:"valueCase,omitempty"`
-				ValueExactMatch       *bool            `json:"valueExactMatch,omitempty"`
-				ValueIgnoreSegment    *bool            `json:"valueIgnoreSegment,omitempty"`
-				ValueNormalize        *bool            `json:"valueNormalize,omitempty"`
-				ValueRecursive        *bool            `json:"valueRecursive,omitempty"`
-				ValueWildcard         *bool            `json:"valueWildcard,omitempty"`
-				UseXForwardForHeaders *bool            `json:"useXForwardForHeaders,omitempty"`
-			} `json:"conditions,omitempty"`
+	// GetExportConfigurationResponseStatus represents the status of staging or production environment.
+	GetExportConfigurationResponseStatus struct {
+		Status string `json:"status"`
+	}
 
-			EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
-			SamplingRate        int                        `json:"samplingRate,omitempty"`
-			LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
-			Operation           string                     `json:"operation,omitempty"`
-		} `json:"customRules"`
-		Rulesets []struct {
-			ID               int            `json:"id"`
-			RulesetVersionID int            `json:"rulesetVersionId"`
-			Type             string         `json:"type"`
-			ReleaseDate      time.Time      `json:"releaseDate"`
-			Rules            *RulesetsRules `json:"rules,omitempty"`
-			AttackGroups     []struct {
-				Group     string `json:"group"`
-				GroupName string `json:"groupName"`
-				Threshold int    `json:"threshold,omitempty"`
-			} `json:"attackGroups,omitempty"`
-		} `json:"rulesets"`
-		MatchTargets struct {
-			APITargets []struct {
-				Sequence int    `json:"sequence"`
-				ID       int    `json:"id,omitempty"`
-				TargetID int    `json:"targetId"`
-				Type     string `json:"type,omitempty"`
-				Apis     []struct {
-					ID   int    `json:"id,omitempty"`
-					Name string `json:"name,omitempty"`
-				} `json:"apis,omitempty"`
-				SecurityPolicy struct {
-					PolicyID string `json:"policyId,omitempty"`
-				} `json:"securityPolicy,omitempty"`
-				BypassNetworkLists []struct {
-					Name string `json:"name,omitempty"`
-					ID   string `json:"id,omitempty"`
-				} `json:"bypassNetworkLists,omitempty"`
-			} `json:"apiTargets,omitempty"`
-			WebsiteTargets []struct {
-				Type               string `json:"type"`
-				BypassNetworkLists []struct {
-					ID   string `json:"id"`
-					Name string `json:"name"`
-				} `json:"bypassNetworkLists,omitempty"`
-				DefaultFile                  string   `json:"defaultFile"`
-				FilePaths                    []string `json:"filePaths,omitempty"`
-				FileExtensions               []string `json:"fileExtensions,omitempty"`
-				Hostnames                    []string `json:"hostnames,omitempty"`
-				ID                           int      `json:"id"`
-				IsNegativeFileExtensionMatch bool     `json:"isNegativeFileExtensionMatch"`
-				IsNegativePathMatch          bool     `json:"isNegativePathMatch"`
-				SecurityPolicy               struct {
-					PolicyID string `json:"policyId"`
-				} `json:"securityPolicy"`
-				Sequence int `json:"-"`
-			} `json:"websiteTargets"`
-		} `json:"matchTargets"`
-		SecurityPolicies []struct {
-			ID                      string `json:"id"`
-			Name                    string `json:"name"`
-			HasRatePolicyWithAPIKey bool   `json:"hasRatePolicyWithApiKey"`
-			SecurityControls        struct {
-				ApplyAccountProtectionControls bool `json:"applyAccountProtectionControls"`
-				ApplyAPIConstraints            bool `json:"applyApiConstraints"`
-				ApplyApplicationLayerControls  bool `json:"applyApplicationLayerControls"`
-				ApplyBotmanControls            bool `json:"applyBotmanControls"`
-				ApplyNetworkLayerControls      bool `json:"applyNetworkLayerControls"`
-				ApplyRateControls              bool `json:"applyRateControls"`
-				ApplyReputationControls        bool `json:"applyReputationControls"`
-				ApplySlowPostControls          bool `json:"applySlowPostControls"`
-				ApplyMalwareControls           bool `json:"applyMalwareControls"`
-				ApplyURLProtectionControls     bool `json:"applyUrlProtectionControls"`
-			} `json:"securityControls"`
-			WebApplicationFirewall struct {
-				RuleActions []struct {
-					Action                 string              `json:"action"`
-					ID                     int                 `json:"id"`
-					RulesetVersionID       int                 `json:"rulesetVersionId"`
-					Conditions             *RuleConditions     `json:"conditions,omitempty"`
-					AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
-					Exception              *RuleException      `json:"exception,omitempty"`
-				} `json:"ruleActions,omitempty"`
-				AttackGroupActions []struct {
-					Action                 string                         `json:"action"`
-					Group                  string                         `json:"group"`
-					RulesetVersionID       int                            `json:"rulesetVersionId"`
-					AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
-					Exception              *AttackGroupException          `json:"exception,omitempty"`
-				} `json:"attackGroupActions,omitempty"`
-				Evaluation  *WebApplicationFirewallEvaluation `json:"evaluation,omitempty"`
-				ThreatIntel string                            `json:"threatIntel"`
-			} `json:"webApplicationFirewall"`
-			CustomRuleActions []struct {
-				Action string `json:"action"`
-				ID     int    `json:"id"`
-			} `json:"customRuleActions,omitempty"`
-			APIRequestConstraints *APIRequestConstraintsexp `json:"apiRequestConstraints,omitempty"`
-			ClientReputation      struct {
-				ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
-			} `json:"clientReputation"`
-			RatePolicyActions              *SecurityPoliciesRatePolicyActions    `json:"ratePolicyActions,omitempty"`
-			MalwarePolicyActions           []MalwarePolicyActionBody             `json:"malwarePolicyActions,omitempty"`
-			URLProtectionPoliciesActions   []URLProtectionActionResp             `json:"urlProtectionPolicyActions,omitempty"`
-			IPGeoFirewall                  *IPGeoFirewall                        `json:"ipGeoFirewall,omitempty"`
-			RapidRules                     *RapidRules                           `json:"rapidRules,omitempty"`
-			PenaltyBox                     *SecurityPoliciesPenaltyBox           `json:"penaltyBox,omitempty"`
-			EvaluationPenaltyBox           *SecurityPoliciesPenaltyBox           `json:"evaluationPenaltyBox,omitempty"`
-			PenaltyBoxConditions           *SecurityPoliciesPenaltyBoxConditions `json:"penaltyBoxConditions,omitempty"`
-			EvaluationPenaltyBoxConditions *SecurityPoliciesPenaltyBoxConditions `json:"evaluationPenaltyBoxConditions,omitempty"`
-			SlowPost                       *SlowPostexp                          `json:"slowPost,omitempty"`
-			AccountProtection              *AccountProtection                    `json:"accountProtection,omitempty"`
-			LoggingOverrides               *LoggingOverridesexp                  `json:"loggingOverrides,omitempty"`
-			AttackPayloadLoggingOverrides  *AttackPayloadLoggingOverrides        `json:"attackPayloadLoggingOverrides,omitempty"`
-			PragmaHeader                   *GetAdvancedSettingsPragmaResponse    `json:"pragmaHeader,omitempty"`
-			EvasivePathMatch               *EvasivePathMatchexp                  `json:"evasivePathMatch,omitempty"`
-			RequestBody                    *RequestBody                          `json:"requestBody,omitempty"`
-			BotManagement                  *BotManagement                        `json:"botManagement,omitempty"`
-			AIRules                        *ExportAIRulesResponse                `json:"aiRules,omitempty"`
-		} `json:"securityPolicies"`
-		Siem            *Siemexp            `json:"siem,omitempty"`
-		AdvancedOptions *AdvancedOptionsexp `json:"advancedOptions,omitempty"`
-		CustomDenyList  *CustomDenyListexp  `json:"customDenyList,omitempty"`
-		Evaluating      struct {
-			SecurityPolicies []EvaluatingSecurityPolicy `json:"securityPolicies,omitempty"`
-		} `json:"evaluating,omitempty"`
-		MalwarePolicies           []MalwarePolicyBody              `json:"malwarePolicies,omitempty"`
-		CustomBotCategories       []map[string]interface{}         `json:"customBotCategories,omitempty"`
-		CustomDefinedBots         []map[string]interface{}         `json:"customDefinedBots,omitempty"`
-		CustomBotCategorySequence []string                         `json:"customBotCategorySequence,omitempty"`
-		CustomClients             []map[string]interface{}         `json:"customClients,omitempty"`
-		CustomClientSequence      []string                         `json:"customClientSequence,omitempty"`
-		ResponseActions           *ResponseActions                 `json:"responseActions,omitempty"`
-		AdvancedSettings          *AdvancedSettings                `json:"advancedSettings,omitempty"`
-		URLProtectionPolicies     []GetURLProtectionPolicyResponse `json:"urlProtectionPolicies,omitempty"`
+	// GetExportConfigurationResponseRatePolicy represents an individual rate policy item.
+	GetExportConfigurationResponseRatePolicy struct {
+		AdditionalMatchOptions []AdditionalMatchOption      `json:"additionalMatchOptions,omitempty"`
+		AllTraffic             bool                         `json:"allTraffic,omitempty"`
+		AverageThreshold       int                          `json:"averageThreshold"`
+		BurstThreshold         int                          `json:"burstThreshold"`
+		BurstWindow            *int                         `json:"burstWindow,omitempty"`
+		ClientIdentifiers      []string                     `json:"clientIdentifiers,omitempty"`
+		Condition              *RatePolicyCondition         `json:"condition,omitempty"`
+		CreateDate             time.Time                    `json:"-"`
+		CounterType            string                       `json:"counterType"`
+		Description            string                       `json:"description,omitempty"`
+		FileExtensions         *RatePolicyFileExtensions    `json:"fileExtensions,omitempty"`
+		Hosts                  *RatePoliciesHosts           `json:"hosts,omitempty"`
+		Hostnames              []string                     `json:"hostnames,omitempty"`
+		ID                     int                          `json:"id"`
+		MatchType              string                       `json:"matchType"`
+		Name                   string                       `json:"name"`
+		Path                   *RatePoliciesPath            `json:"path,omitempty"`
+		PathMatchType          string                       `json:"pathMatchType,omitempty"`
+		PathURIPositiveMatch   bool                         `json:"pathUriPositiveMatch"`
+		PenaltyBoxDuration     string                       `json:"penaltyBoxDuration"`
+		QueryParameters        *RatePoliciesQueryParameters `json:"queryParameters,omitempty"`
+		RequestType            string                       `json:"requestType"`
+		SameActionOnIpv6       bool                         `json:"sameActionOnIpv6"`
+		Type                   string                       `json:"type"`
+		UpdateDate             time.Time                    `json:"-"`
+		UseXForwardForHeaders  bool                         `json:"useXForwardForHeaders"`
+		Used                   bool                         `json:"-"`
+	}
+
+	// AdditionalMatchOption represents an additional match option.
+	AdditionalMatchOption struct {
+		PositiveMatch bool     `json:"positiveMatch"`
+		Type          string   `json:"type"`
+		Values        []string `json:"values"`
+	}
+
+	// GetExportConfigurationResponseReputationProfile represents a reputation profile item.
+	GetExportConfigurationResponseReputationProfile struct {
+		Condition        *ConditionReputationProfile `json:"condition,omitempty"`
+		Context          string                      `json:"context,omitempty"`
+		ContextReadable  string                      `json:"-"`
+		Enabled          bool                        `json:"-"`
+		ID               int                         `json:"id"`
+		Name             string                      `json:"name"`
+		SharedIPHandling string                      `json:"sharedIpHandling"`
+		Threshold        int                         `json:"threshold"`
+	}
+
+	// GetExportConfigurationResponseCustomRule represents an individual custom rule item.
+	GetExportConfigurationResponseCustomRule struct {
+		ID                  int                        `json:"id"`
+		Name                string                     `json:"name"`
+		Description         string                     `json:"description,omitempty"`
+		Version             int                        `json:"-"`
+		RuleActivated       bool                       `json:"-"`
+		Structured          bool                       `json:"-"`
+		Tag                 []string                   `json:"tag,omitempty"`
+		Conditions          []CustomRuleCondition      `json:"conditions,omitempty"`
+		EffectiveTimePeriod *CustomRuleEffectivePeriod `json:"effectiveTimePeriod,omitempty"`
+		SamplingRate        int                        `json:"samplingRate,omitempty"`
+		LoggingOptions      *json.RawMessage           `json:"loggingOptions,omitempty"`
+		Operation           string                     `json:"operation,omitempty"`
+	}
+
+	// GetExportConfigurationResponseRuleset represents a ruleset item.
+	GetExportConfigurationResponseRuleset struct {
+		ID               int                                                `json:"id"`
+		RulesetVersionID int                                                `json:"rulesetVersionId"`
+		Type             string                                             `json:"type"`
+		ReleaseDate      time.Time                                          `json:"releaseDate"`
+		Rules            *RulesetsRules                                     `json:"rules,omitempty"`
+		AttackGroups     []GetExportConfigurationResponseRulesetAttackGroup `json:"attackGroups,omitempty"`
+	}
+
+	// GetExportConfigurationResponseRulesetAttackGroup represents an attack group item in a ruleset.
+	GetExportConfigurationResponseRulesetAttackGroup struct {
+		Group     string `json:"group"`
+		GroupName string `json:"groupName"`
+		Threshold int    `json:"threshold,omitempty"`
+	}
+
+	// GetExportConfigurationResponseMatchTargets represents the match targets section of the export response.
+	GetExportConfigurationResponseMatchTargets struct {
+		APITargets     []GetExportConfigurationResponseMatchTargetsAPITarget     `json:"apiTargets,omitempty"`
+		WebsiteTargets []GetExportConfigurationResponseMatchTargetsWebsiteTarget `json:"websiteTargets"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsAPITarget represents an API target.
+	GetExportConfigurationResponseMatchTargetsAPITarget struct {
+		Sequence           int                                                                    `json:"sequence"`
+		ID                 int                                                                    `json:"id,omitempty"`
+		TargetID           int                                                                    `json:"targetId"`
+		Type               string                                                                 `json:"type,omitempty"`
+		Apis               []GetExportConfigurationResponseMatchTargetsAPITargetAPI               `json:"apis,omitempty"`
+		SecurityPolicy     GetExportConfigurationResponseMatchTargetsAPITargetSecurityPolicy      `json:"securityPolicy,omitempty"`
+		BypassNetworkLists []GetExportConfigurationResponseMatchTargetsAPITargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsAPITargetAPI represents an API in an API target.
+	GetExportConfigurationResponseMatchTargetsAPITargetAPI struct {
+		ID   int    `json:"id,omitempty"`
+		Name string `json:"name,omitempty"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsAPITargetSecurityPolicy represents the security policy in an API target.
+	GetExportConfigurationResponseMatchTargetsAPITargetSecurityPolicy struct {
+		PolicyID string `json:"policyId,omitempty"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsAPITargetBypassNetworkList represents a bypass network list in an API target.
+	GetExportConfigurationResponseMatchTargetsAPITargetBypassNetworkList struct {
+		Name string `json:"name,omitempty"`
+		ID   string `json:"id,omitempty"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsWebsiteTarget represents a website target.
+	GetExportConfigurationResponseMatchTargetsWebsiteTarget struct {
+		Type                         string                                                                     `json:"type"`
+		BypassNetworkLists           []GetExportConfigurationResponseMatchTargetsWebsiteTargetBypassNetworkList `json:"bypassNetworkLists,omitempty"`
+		DefaultFile                  string                                                                     `json:"defaultFile"`
+		FilePaths                    []string                                                                   `json:"filePaths,omitempty"`
+		FileExtensions               []string                                                                   `json:"fileExtensions,omitempty"`
+		Hostnames                    []string                                                                   `json:"hostnames,omitempty"`
+		ID                           int                                                                        `json:"id"`
+		IsNegativeFileExtensionMatch bool                                                                       `json:"isNegativeFileExtensionMatch"`
+		IsNegativePathMatch          bool                                                                       `json:"isNegativePathMatch"`
+		SecurityPolicy               GetExportConfigurationResponseMatchTargetsWebsiteTargetSecurityPolicy      `json:"securityPolicy"`
+		Sequence                     int                                                                        `json:"-"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsWebsiteTargetBypassNetworkList represents a bypass network list in a website target.
+	GetExportConfigurationResponseMatchTargetsWebsiteTargetBypassNetworkList struct {
+		ID   string `json:"id"`
+		Name string `json:"name"`
+	}
+
+	// GetExportConfigurationResponseMatchTargetsWebsiteTargetSecurityPolicy represents the security policy in a website target.
+	GetExportConfigurationResponseMatchTargetsWebsiteTargetSecurityPolicy struct {
+		PolicyID string `json:"policyId"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicy represents a security policy item.
+	GetExportConfigurationResponseSecurityPolicy struct {
+		ID                             string                                                             `json:"id"`
+		Name                           string                                                             `json:"name"`
+		HasRatePolicyWithAPIKey        bool                                                               `json:"hasRatePolicyWithApiKey"`
+		SecurityControls               GetExportConfigurationResponseSecurityPolicySecurityControls       `json:"securityControls"`
+		WebApplicationFirewall         GetExportConfigurationResponseSecurityPolicyWebApplicationFirewall `json:"webApplicationFirewall"`
+		CustomRuleActions              []ExportActionItem                                                 `json:"customRuleActions,omitempty"`
+		APIRequestConstraints          *APIRequestConstraintsexp                                          `json:"apiRequestConstraints,omitempty"`
+		ClientReputation               GetExportConfigurationResponseSecurityPolicyClientReputation       `json:"clientReputation"`
+		RatePolicyActions              *SecurityPoliciesRatePolicyActions                                 `json:"ratePolicyActions,omitempty"`
+		MalwarePolicyActions           []MalwarePolicyActionBody                                          `json:"malwarePolicyActions,omitempty"`
+		URLProtectionPoliciesActions   []URLProtectionActionResp                                          `json:"urlProtectionPolicyActions,omitempty"`
+		IPGeoFirewall                  *IPGeoFirewall                                                     `json:"ipGeoFirewall,omitempty"`
+		RapidRules                     *RapidRules                                                        `json:"rapidRules,omitempty"`
+		PenaltyBox                     *SecurityPoliciesPenaltyBox                                        `json:"penaltyBox,omitempty"`
+		EvaluationPenaltyBox           *SecurityPoliciesPenaltyBox                                        `json:"evaluationPenaltyBox,omitempty"`
+		PenaltyBoxConditions           *SecurityPoliciesPenaltyBoxConditions                              `json:"penaltyBoxConditions,omitempty"`
+		EvaluationPenaltyBoxConditions *SecurityPoliciesPenaltyBoxConditions                              `json:"evaluationPenaltyBoxConditions,omitempty"`
+		SlowPost                       *SlowPostexp                                                       `json:"slowPost,omitempty"`
+		AccountProtection              *AccountProtection                                                 `json:"accountProtection,omitempty"`
+		LoggingOverrides               *LoggingOverridesexp                                               `json:"loggingOverrides,omitempty"`
+		AttackPayloadLoggingOverrides  *AttackPayloadLoggingOverrides                                     `json:"attackPayloadLoggingOverrides,omitempty"`
+		PragmaHeader                   *GetAdvancedSettingsPragmaResponse                                 `json:"pragmaHeader,omitempty"`
+		EvasivePathMatch               *EvasivePathMatchexp                                               `json:"evasivePathMatch,omitempty"`
+		RequestBody                    *RequestBody                                                       `json:"requestBody,omitempty"`
+		BotManagement                  *BotManagement                                                     `json:"botManagement,omitempty"`
+		AIRules                        *ExportAIRulesResponse                                             `json:"aiRules,omitempty"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicySecurityControls describes security controls for a policy.
+	GetExportConfigurationResponseSecurityPolicySecurityControls struct {
+		ApplyAccountProtectionControls bool `json:"applyAccountProtectionControls"`
+		ApplyAPIConstraints            bool `json:"applyApiConstraints"`
+		ApplyApplicationLayerControls  bool `json:"applyApplicationLayerControls"`
+		ApplyBotmanControls            bool `json:"applyBotmanControls"`
+		ApplyNetworkLayerControls      bool `json:"applyNetworkLayerControls"`
+		ApplyRateControls              bool `json:"applyRateControls"`
+		ApplyReputationControls        bool `json:"applyReputationControls"`
+		ApplySlowPostControls          bool `json:"applySlowPostControls"`
+		ApplyMalwareControls           bool `json:"applyMalwareControls"`
+		ApplyURLProtectionControls     bool `json:"applyUrlProtectionControls"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicyWebApplicationFirewall describes WAF settings for a policy.
+	GetExportConfigurationResponseSecurityPolicyWebApplicationFirewall struct {
+		RuleActions        []GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallRuleAction        `json:"ruleActions,omitempty"`
+		AttackGroupActions []GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallAttackGroupAction `json:"attackGroupActions,omitempty"`
+		Evaluation         *WebApplicationFirewallEvaluation                                                     `json:"evaluation,omitempty"`
+		ThreatIntel        string                                                                                `json:"threatIntel"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallRuleAction describes a rule action in WAF.
+	GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallRuleAction struct {
+		Action                 string              `json:"action"`
+		ID                     int                 `json:"id"`
+		RulesetVersionID       int                 `json:"rulesetVersionId"`
+		Conditions             *RuleConditions     `json:"conditions,omitempty"`
+		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
+		Exception              *RuleException      `json:"exception,omitempty"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallAttackGroupAction describes an attack group action in WAF.
+	GetExportConfigurationResponseSecurityPolicyWebApplicationFirewallAttackGroupAction struct {
+		Action                 string                         `json:"action"`
+		Group                  string                         `json:"group"`
+		RulesetVersionID       int                            `json:"rulesetVersionId"`
+		AdvancedExceptionsList *AttackGroupAdvancedExceptions `json:"advancedExceptions,omitempty"`
+		Exception              *AttackGroupException          `json:"exception,omitempty"`
+	}
+
+	// GetExportConfigurationResponseSecurityPolicyClientReputation describes client reputation settings for a policy.
+	GetExportConfigurationResponseSecurityPolicyClientReputation struct {
+		ReputationProfileActions *ClientReputationReputationProfileActions `json:"reputationProfileActions,omitempty"`
+	}
+
+	// GetExportConfigurationResponseEvaluating describes evaluating policies in the export response.
+	GetExportConfigurationResponseEvaluating struct {
+		SecurityPolicies []EvaluatingSecurityPolicy `json:"securityPolicies,omitempty"`
 	}
 
 	// RatePoliciesPath is returned as part of GetExportConfigurationResponse.
@@ -287,18 +338,24 @@ type (
 		Values        *RatePoliciesPathValues `json:"values,omitempty"`
 	}
 
-	// ReputationProfileActionsexp is returned as part of GetExportConfigurationResponse.
-	ReputationProfileActionsexp []struct {
+	// ExportActionItem describes an action and its associated identifier.
+	ExportActionItem struct {
 		Action string `json:"action"`
 		ID     int    `json:"id"`
 	}
 
-	// RatePolicyActionsexp is returned as part of GetExportConfigurationResponse.
-	RatePolicyActionsexp []struct {
+	// ReputationProfileActionsexp is returned as part of GetExportConfigurationResponse.
+	ReputationProfileActionsexp []ExportActionItem
+
+	// RatePolicyActionItem describes a rate policy action.
+	RatePolicyActionItem struct {
 		ID         int    `json:"id"`
 		Ipv4Action string `json:"ipv4Action"`
 		Ipv6Action string `json:"ipv6Action"`
 	}
+
+	// RatePolicyActionsexp is returned as part of GetExportConfigurationResponse.
+	RatePolicyActionsexp []RatePolicyActionItem
 
 	// SlowRateThresholdExp is returned as part of GetExportConfigurationResponse.
 	SlowRateThresholdExp struct {
@@ -333,22 +390,18 @@ type (
 	}
 
 	// CustomDenyListexp is returned as part of GetExportConfigurationResponse.
-	CustomDenyListexp []struct {
-		Description string `json:"description,omitempty"`
-		Name        string `json:"name"`
-		ID          string `json:"id"`
-		Parameters  []struct {
-			DisplayName string `json:"-"`
-			Name        string `json:"name"`
-			Value       string `json:"value"`
-		} `json:"parameters"`
+	CustomDenyListexp []CustomDenyListexpItem
+
+	// CustomDenyListexpItem represents an individual custom deny list item in the export response.
+	CustomDenyListexpItem struct {
+		Description string                `json:"description,omitempty"`
+		Name        string                `json:"name"`
+		ID          string                `json:"id"`
+		Parameters  []CustomDenyParameter `json:"parameters"`
 	}
 
-	// CustomRuleActionsexp  is returned as part of GetExportConfigurationResponse.
-	CustomRuleActionsexp []struct {
-		Action string `json:"action"`
-		ID     int    `json:"id"`
-	}
+	// CustomRuleActionsexp is returned as part of GetExportConfigurationResponse.
+	CustomRuleActionsexp []ExportActionItem
 
 	// Siemexp is returned as part of GetExportConfigurationResponse.
 	Siemexp struct {
@@ -368,28 +421,31 @@ type (
 
 	// APIRequestConstraintsexp is returned as part of GetExportConfigurationResponse.
 	APIRequestConstraintsexp struct {
-		Action       string `json:"action,omitempty"`
-		APIEndpoints []struct {
-			Action string `json:"action"`
-			ID     int    `json:"id"`
-		} `json:"apiEndpoints,omitempty"`
+		Action       string             `json:"action,omitempty"`
+		APIEndpoints []ExportActionItem `json:"apiEndpoints,omitempty"`
 	}
 
 	// Evaluationexp is returned as part of GetExportConfigurationResponse.
 	Evaluationexp struct {
-		AttackGroupActions []struct {
-			Action string `json:"action"`
-			Group  string `json:"group"`
-		} `json:"attackGroupActions"`
-		EvaluationID      int `json:"evaluationId"`
-		EvaluationVersion int `json:"evaluationVersion"`
-		RuleActions       []struct {
-			Action     string          `json:"action"`
-			ID         int             `json:"id"`
-			Conditions *RuleConditions `json:"conditions,omitempty"`
-			Exception  *RuleException  `json:"exception,omitempty"`
-		} `json:"ruleActions"`
-		RulesetVersionID int `json:"rulesetVersionId"`
+		AttackGroupActions []EvaluationexpAttackGroupActionsItem `json:"attackGroupActions"`
+		EvaluationID       int                                   `json:"evaluationId"`
+		EvaluationVersion  int                                   `json:"evaluationVersion"`
+		RuleActions        []EvaluationexpRuleActionsItem        `json:"ruleActions"`
+		RulesetVersionID   int                                   `json:"rulesetVersionId"`
+	}
+
+	// EvaluationexpAttackGroupActionsItem describes an attack group action in an evaluation.
+	EvaluationexpAttackGroupActionsItem struct {
+		Action string `json:"action"`
+		Group  string `json:"group"`
+	}
+
+	// EvaluationexpRuleActionsItem describes a rule action in an evaluation.
+	EvaluationexpRuleActionsItem struct {
+		Action     string          `json:"action"`
+		ID         int             `json:"id"`
+		Conditions *RuleConditions `json:"conditions,omitempty"`
+		Exception  *RuleException  `json:"exception,omitempty"`
 	}
 
 	// ConditionReputationProfile is returned as part of GetExportConfigurationResponse.
@@ -405,14 +461,20 @@ type (
 	}
 
 	// HeaderCookieOrParamValuesattackgroup is returned as part of GetExportConfigurationResponse.
-	HeaderCookieOrParamValuesattackgroup []struct {
-		Criteria []struct {
-			Hostnames []string `json:"hostnames,omitempty"`
-			Paths     []string `json:"paths,omitempty"`
-			Values    []string `json:"values,omitempty"`
-		} `json:"criteria"`
-		ValueWildcard bool     `json:"valueWildcard,omitempty"`
-		Values        []string `json:"values,omitempty"`
+	HeaderCookieOrParamValuesattackgroup []HeaderCookieOrParamValuesattackgroupItem
+
+	// HeaderCookieOrParamValuesattackgroupItem represents a criteria item in HeaderCookieOrParamValuesattackgroup.
+	HeaderCookieOrParamValuesattackgroupItem struct {
+		Criteria      []HeaderCookieOrParamValuesattackgroupItemCriteriaItem `json:"criteria"`
+		ValueWildcard bool                                                   `json:"valueWildcard,omitempty"`
+		Values        []string                                               `json:"values,omitempty"`
+	}
+
+	// HeaderCookieOrParamValuesattackgroupItemCriteriaItem represents hostnames, paths, and values in criteria.
+	HeaderCookieOrParamValuesattackgroupItemCriteriaItem struct {
+		Hostnames []string `json:"hostnames,omitempty"`
+		Paths     []string `json:"paths,omitempty"`
+		Values    []string `json:"values,omitempty"`
 	}
 
 	// SpecificHeaderCookieOrParamNameValueexp is returned as part of GetExportConfigurationResponse.
@@ -423,7 +485,10 @@ type (
 	}
 
 	// AtomicConditionsexp is returned as part of GetExportConfigurationResponse.
-	AtomicConditionsexp []struct {
+	AtomicConditionsexp []AtomicConditionsexpItem
+
+	// AtomicConditionsexpItem represents an atomic condition item.
+	AtomicConditionsexpItem struct {
 		CheckIps      *json.RawMessage `json:"checkIps,omitempty"`
 		ClassName     string           `json:"className,omitempty"`
 		Index         int              `json:"index,omitempty"`
@@ -437,62 +502,47 @@ type (
 		Host          []string         `json:"host,omitempty"`
 	}
 
+	// LoggingHeaderOrCookie describes header or cookie logging configuration.
+	LoggingHeaderOrCookie struct {
+		Type   string   `json:"type"`
+		Values []string `json:"values,omitempty"`
+	}
+
 	// Loggingexp is returned as part of GetExportConfigurationResponse.
 	Loggingexp struct {
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		AllowSampling   bool                  `json:"allowSampling"`
+		Cookies         LoggingHeaderOrCookie `json:"cookies"`
+		CustomHeaders   LoggingHeaderOrCookie `json:"customHeaders"`
+		StandardHeaders LoggingHeaderOrCookie `json:"standardHeaders"`
 	}
 
 	// LoggingOverridesexp is returned as part of GetExportConfigurationResponse.
 	LoggingOverridesexp struct {
-		AllowSampling bool `json:"allowSampling"`
-		Cookies       struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"cookies"`
-		CustomHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"customHeaders"`
-		Override        bool `json:"override"`
-		StandardHeaders struct {
-			Type   string   `json:"type"`
-			Values []string `json:"values,omitempty"`
-		} `json:"standardHeaders"`
+		AllowSampling   bool                  `json:"allowSampling"`
+		Cookies         LoggingHeaderOrCookie `json:"cookies"`
+		CustomHeaders   LoggingHeaderOrCookie `json:"customHeaders"`
+		Override        bool                  `json:"override"`
+		StandardHeaders LoggingHeaderOrCookie `json:"standardHeaders"`
+	}
+
+	// AttackPayloadLoggingPayloadType describes payload logging type.
+	AttackPayloadLoggingPayloadType struct {
+		Type string `json:"type"`
 	}
 
 	// AttackPayloadLogging is returned as part of GetExportConfigurationResponse.
 	AttackPayloadLogging struct {
-		Enabled     bool `json:"enabled"`
-		RequestBody struct {
-			Type string `json:"type"`
-		} `json:"requestBody"`
-		ResponseBody struct {
-			Type string `json:"type"`
-		} `json:"responseBody"`
+		Enabled      bool                            `json:"enabled"`
+		RequestBody  AttackPayloadLoggingPayloadType `json:"requestBody"`
+		ResponseBody AttackPayloadLoggingPayloadType `json:"responseBody"`
 	}
 
 	// AttackPayloadLoggingOverrides is returned as part of GetExportConfigurationResponse.
 	AttackPayloadLoggingOverrides struct {
-		Enabled     bool `json:"enabled"`
-		RequestBody struct {
-			Type string `json:"type"`
-		} `json:"requestBody"`
-		ResponseBody struct {
-			Type string `json:"type"`
-		} `json:"responseBody"`
-		Override bool `json:"override"`
+		Enabled      bool                            `json:"enabled"`
+		RequestBody  AttackPayloadLoggingPayloadType `json:"requestBody"`
+		ResponseBody AttackPayloadLoggingPayloadType `json:"responseBody"`
+		Override     bool                            `json:"override"`
 	}
 
 	// EvasivePathMatchexp contains the EnablePathMatch setting
@@ -507,17 +557,23 @@ type (
 
 	// AsePenaltyBoxexp contains the ASE Penalty Box setting
 	AsePenaltyBoxexp struct {
-		RequestCount            int      `json:"requestCount"`
-		BlockDuration           int      `json:"blockDuration"`
-		ClientIdentifiers       []string `json:"clientIdentifiers"`
-		AkamaiManagedExclusions struct {
-			Rules       []int  `json:"rules"`
-			LastUpdated string `json:"lastUpdated,omitempty"`
-		} `json:"akamaiManagedExclusions"`
-		QualificationExclusions struct {
-			AttackGroups []string `json:"attackGroups"`
-			Rules        []int    `json:"rules"`
-		} `json:"qualificationExclusions"`
+		RequestCount            int                                     `json:"requestCount"`
+		BlockDuration           int                                     `json:"blockDuration"`
+		ClientIdentifiers       []string                                `json:"clientIdentifiers"`
+		AkamaiManagedExclusions AsePenaltyBoxexpAkamaiManagedExclusions `json:"akamaiManagedExclusions"`
+		QualificationExclusions AsePenaltyBoxexpQualificationExclusions `json:"qualificationExclusions"`
+	}
+
+	// AsePenaltyBoxexpAkamaiManagedExclusions describes Akamai managed exclusions for ASE penalty box.
+	AsePenaltyBoxexpAkamaiManagedExclusions struct {
+		Rules       []int  `json:"rules"`
+		LastUpdated string `json:"lastUpdated,omitempty"`
+	}
+
+	// AsePenaltyBoxexpQualificationExclusions describes qualification exclusions for ASE penalty box.
+	AsePenaltyBoxexpQualificationExclusions struct {
+		AttackGroups []string `json:"attackGroups"`
+		Rules        []int    `json:"rules"`
 	}
 
 	// PIILearningexp contains the PIILearning setting
@@ -540,7 +596,10 @@ type (
 	}
 
 	// ConditionsExp is returned as part of GetExportConfigurationResponse.
-	ConditionsExp []struct {
+	ConditionsExp []ConditionsExpItem
+
+	// ConditionsExpItem represents an individual condition item in ConditionsExp.
+	ConditionsExpItem struct {
 		Type          string           `json:"type"`
 		PositiveMatch bool             `json:"positiveMatch"`
 		Name          *json.RawMessage `json:"name,omitempty"`
@@ -555,7 +614,10 @@ type (
 	RatePoliciesPathValues []string
 
 	// RatePoliciesQueryParameters is returned as part of GetExportConfigurationResponse.
-	RatePoliciesQueryParameters []struct {
+	RatePoliciesQueryParameters []RatePoliciesQueryParametersItem
+
+	// RatePoliciesQueryParametersItem represents a query parameter in a rate policy.
+	RatePoliciesQueryParametersItem struct {
 		Name          string                             `json:"name"`
 		PositiveMatch bool                               `json:"positiveMatch"`
 		ValueInRange  bool                               `json:"valueInRange"`
@@ -579,26 +641,35 @@ type (
 
 	// WebApplicationFirewallEvaluation is returned as part of GetExportConfigurationResponse.
 	WebApplicationFirewallEvaluation struct {
-		AttackGroupActions []struct {
-			Action                 string              `json:"action"`
-			Group                  string              `json:"group"`
-			Exception              *RuleException      `json:"exception,omitempty"`
-			AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
-		} `json:"attackGroupActions,omitempty"`
-		EvaluationID      int `json:"evaluationId"`
-		EvaluationVersion int `json:"evaluationVersion"`
-		RuleActions       []struct {
-			Action                 string              `json:"action"`
-			ID                     int                 `json:"id"`
-			Conditions             *RuleConditions     `json:"conditions,omitempty"`
-			Exception              *RuleException      `json:"exception,omitempty"`
-			AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
-		} `json:"ruleActions,omitempty"`
-		RulesetVersionID int `json:"rulesetVersionId"`
+		AttackGroupActions []WebApplicationFirewallEvaluationAttackGroupActionsItem `json:"attackGroupActions,omitempty"`
+		EvaluationID       int                                                      `json:"evaluationId"`
+		EvaluationVersion  int                                                      `json:"evaluationVersion"`
+		RuleActions        []WebApplicationFirewallEvaluationRuleActionsItem        `json:"ruleActions,omitempty"`
+		RulesetVersionID   int                                                      `json:"rulesetVersionId"`
+	}
+
+	// WebApplicationFirewallEvaluationAttackGroupActionsItem describes an attack group action in WAF evaluation.
+	WebApplicationFirewallEvaluationAttackGroupActionsItem struct {
+		Action                 string              `json:"action"`
+		Group                  string              `json:"group"`
+		Exception              *RuleException      `json:"exception,omitempty"`
+		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
+	}
+
+	// WebApplicationFirewallEvaluationRuleActionsItem describes a rule action in WAF evaluation.
+	WebApplicationFirewallEvaluationRuleActionsItem struct {
+		Action                 string              `json:"action"`
+		ID                     int                 `json:"id"`
+		Conditions             *RuleConditions     `json:"conditions,omitempty"`
+		Exception              *RuleException      `json:"exception,omitempty"`
+		AdvancedExceptionsList *AdvancedExceptions `json:"advancedExceptions,omitempty"`
 	}
 
 	// RulesetsRules is returned as part of GetExportConfigurationResponse.
-	RulesetsRules []struct {
+	RulesetsRules []RulesetsRulesItem
+
+	// RulesetsRulesItem represents an individual rule item in a ruleset.
+	RulesetsRulesItem struct {
 		ID                  int      `json:"id"`
 		InspectRequestBody  bool     `json:"inspectRequestBody"`
 		InspectResponseBody bool     `json:"inspectResponseBody"`
@@ -611,17 +682,10 @@ type (
 	}
 
 	// ClientReputationReputationProfileActions is returned as part of GetExportConfigurationResponse.
-	ClientReputationReputationProfileActions []struct {
-		Action string `json:"action"`
-		ID     int    `json:"id"`
-	}
+	ClientReputationReputationProfileActions []ExportActionItem
 
 	// SecurityPoliciesRatePolicyActions is returned as part of GetExportConfigurationResponse.
-	SecurityPoliciesRatePolicyActions []struct {
-		ID         int    `json:"id"`
-		Ipv4Action string `json:"ipv4Action"`
-		Ipv6Action string `json:"ipv6Action"`
-	}
+	SecurityPoliciesRatePolicyActions []RatePolicyActionItem
 
 	// AdvancedSettings is returned as part of GetExportConfigurationResponse
 	AdvancedSettings struct {

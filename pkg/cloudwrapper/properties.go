@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -97,32 +97,23 @@ func (c *cloudwrapper) ListProperties(ctx context.Context, params ListProperties
 	logger := c.Log(ctx)
 	logger.Debug("ListProperties")
 
-	uri, err := url.Parse("/cloud-wrapper/v1/properties")
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/properties").
+		AddQueryParam("unused", strconv.FormatBool(params.Unused)).
+		AddQueryParams("contractIds", params.ContractIDs).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListProperties, err)
-	}
-
-	q := uri.Query()
-	q.Add("unused", strconv.FormatBool(params.Unused))
-	for _, ctr := range params.ContractIDs {
-		q.Add("contractIds", ctr)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListProperties, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListProperties, err)
 	}
 
 	var result ListPropertiesResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListProperties, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListProperties, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListProperties, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListProperties, c.Error(resp))
 	}
 
 	return &result, nil
@@ -133,33 +124,26 @@ func (c *cloudwrapper) ListOrigins(ctx context.Context, params ListOriginsReques
 	logger.Debug("ListOrigins")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrListOrigins, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrListOrigins, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloud-wrapper/v1/properties/%d/origins", params.PropertyID))
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/properties/%d/origins", params.PropertyID).
+		AddQueryParam("contractId", params.ContractID).
+		AddQueryParam("groupId", strconv.FormatInt(params.GroupID, 10)).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListOrigins, err)
-	}
-
-	q := uri.Query()
-	q.Add("contractId", params.ContractID)
-	q.Add("groupId", strconv.FormatInt(params.GroupID, 10))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListOrigins, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListOrigins, err)
 	}
 
 	var result ListOriginsResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListOrigins, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListOrigins, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListOrigins, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListOrigins, c.Error(resp))
 	}
 
 	return &result, nil

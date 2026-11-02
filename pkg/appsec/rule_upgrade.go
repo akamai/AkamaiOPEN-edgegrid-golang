@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -26,8 +26,8 @@ type (
 
 	// GetRuleUpgradeRequest is used to verify changes in the KRS rule sets.
 	GetRuleUpgradeRequest struct {
-		ConfigID int
-		Version  int
+		ConfigID int64
+		Version  int64
 		PolicyID string
 	}
 
@@ -52,21 +52,27 @@ type (
 	}
 
 	// RuleData contains updates to rules
-	RuleData []struct {
+	RuleData []RuleDataItem
+
+	// RuleDataItem represents an individual rule update item.
+	RuleDataItem struct {
 		ID    int    `json:"id,omitempty"`
 		Title string `json:"title,omitempty"`
 	}
 
 	// GroupData contains updates to attack groups
-	GroupData []struct {
+	GroupData []GroupDataItem
+
+	// GroupDataItem represents an individual attack group update item.
+	GroupDataItem struct {
 		Group     int    `json:"group,omitempty"`
 		GroupName string `json:"groupName,omitempty"`
 	}
 
 	// UpdateRuleUpgradeRequest is used to upgrade to the most recent version of the KRS rule set.
 	UpdateRuleUpgradeRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		Upgrade  bool   `json:"upgrade"`
 		Mode     string `json:"mode,omitempty"`

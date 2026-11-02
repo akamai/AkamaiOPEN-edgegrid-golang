@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -21,21 +21,24 @@ type (
 
 	// GetApiHostnameCoverageOverlappingRequest is used to retrieve the configuration versions that contain a hostname included in the current configuration version.
 	GetApiHostnameCoverageOverlappingRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Hostname string `json:"-"`
 	}
 
 	// GetApiHostnameCoverageOverlappingResponse is returned from a call to GetApiHostnameCoverageOverlapping.
 	GetApiHostnameCoverageOverlappingResponse struct {
-		OverLappingList []struct {
-			ConfigID      int      `json:"configId"`
-			ConfigName    string   `json:"configName"`
-			ConfigVersion int      `json:"configVersion"`
-			ContractID    string   `json:"contractId"`
-			ContractName  string   `json:"contractName"`
-			VersionTags   []string `json:"versionTags"`
-		} `json:"overLappingList"`
+		OverLappingList []HostnameCoverageOverlappingItem `json:"overLappingList"`
+	}
+
+	// HostnameCoverageOverlappingItem describes a configuration version that contains an overlapping hostname.
+	HostnameCoverageOverlappingItem struct {
+		ConfigID      int64    `json:"configId"`
+		ConfigName    string   `json:"configName"`
+		ConfigVersion int64    `json:"configVersion"`
+		ContractID    string   `json:"contractId"`
+		ContractName  string   `json:"contractName"`
+		VersionTags   []string `json:"versionTags"`
 	}
 )
 

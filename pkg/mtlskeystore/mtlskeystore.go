@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 var (
@@ -21,7 +21,7 @@ type (
 		// ListClientCertificates lists client certificates under the account.
 		//
 		// See: https://techdocs.akamai.com/mtls-origin-keystore/reference/get-client-certs
-		ListClientCertificates(ctx context.Context) (*ListClientCertificatesResponse, error)
+		ListClientCertificates(ctx context.Context, params ListClientCertificatesRequest) (*ListClientCertificatesResponse, error)
 
 		// GetClientCertificate gets details of a client certificate.
 		//

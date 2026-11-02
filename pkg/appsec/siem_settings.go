@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -31,8 +31,8 @@ type (
 
 	// GetSiemSettingsRequest is used to retrieve the SIEM settings for a configuration.
 	GetSiemSettingsRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// GetSiemSettingsResponse is returned from a call to GetSiemSettings.
@@ -49,8 +49,8 @@ type (
 
 	// GetSiemSettingRequest is used to retrieve the SIEM settings for a configuration.
 	GetSiemSettingRequest struct {
-		ConfigID int `json:"-"`
-		Version  int `json:"-"`
+		ConfigID int64 `json:"-"`
+		Version  int64 `json:"-"`
 	}
 
 	// Exception is used to create exceptions list for SIEM events
@@ -72,8 +72,8 @@ type (
 
 	// UpdateSiemSettingsRequest is used to modify the SIEM settings for a configuration.
 	UpdateSiemSettingsRequest struct {
-		ConfigID                    int         `json:"-"`
-		Version                     int         `json:"-"`
+		ConfigID                    int64       `json:"-"`
+		Version                     int64       `json:"-"`
 		EnableForAllPolicies        bool        `json:"enableForAllPolicies"`
 		EnableSiem                  bool        `json:"enableSiem"`
 		EnabledBotmanSiemEvents     *bool       `json:"enabledBotmanSiemEvents,omitempty"`
@@ -99,8 +99,8 @@ type (
 	// RemoveSiemSettingsRequest is used to remove the SIEM settings for a configuration.
 	// Deprecated: this struct will be removed in a future release.
 	RemoveSiemSettingsRequest struct {
-		ConfigID                    int      `json:"-"`
-		Version                     int      `json:"-"`
+		ConfigID                    int64    `json:"-"`
+		Version                     int64    `json:"-"`
 		EnableForAllPolicies        bool     `json:"-"`
 		EnableSiem                  bool     `json:"enableSiem"`
 		EnabledBotmanSiemEvents     *bool    `json:"-"`

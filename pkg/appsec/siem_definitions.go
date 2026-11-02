@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 type (
@@ -25,10 +25,13 @@ type (
 
 	// GetSiemDefinitionsResponse is returned from a call to GetSiemDefinitions.
 	GetSiemDefinitionsResponse struct {
-		SiemDefinitions []struct {
-			ID   int    `json:"id"`
-			Name string `json:"name"`
-		} `json:"siemDefinitions"`
+		SiemDefinitions []SiemDefinition `json:"siemDefinitions"`
+	}
+
+	// SiemDefinition describes an individual SIEM definition item.
+	SiemDefinition struct {
+		ID   int    `json:"id"`
+		Name string `json:"name"`
 	}
 )
 

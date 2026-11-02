@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -140,9 +140,7 @@ func (e *edgeworkers) GetEdgeWorkerID(ctx context.Context, params GetEdgeWorkerI
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetEdgeWorkerID, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/ids/%d", params.EdgeWorkerID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d", params.EdgeWorkerID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetEdgeWorkerID, err)
 	}
@@ -165,20 +163,10 @@ func (e *edgeworkers) ListEdgeWorkersID(ctx context.Context, params ListEdgeWork
 	logger := e.Log(ctx)
 	logger.Debug("ListEdgeWorkersID")
 
-	uri, err := url.Parse("/edgeworkers/v1/ids")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListEdgeWorkersID, err)
-	}
-	q := uri.Query()
-	if params.GroupID != 0 {
-		q.Add("groupId", fmt.Sprintf("%d", params.GroupID))
-	}
-	if params.ResourceTierID != 0 {
-		q.Add("resourceTierId", fmt.Sprintf("%d", params.ResourceTierID))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids").
+		AddQueryParamIf("groupId", fmt.Sprintf("%d", params.GroupID), params.GroupID != 0).
+		AddQueryParamIf("resourceTierId", fmt.Sprintf("%d", params.ResourceTierID), params.ResourceTierID != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListEdgeWorkersID, err)
 	}
@@ -205,18 +193,15 @@ func (e *edgeworkers) CreateEdgeWorkerID(ctx context.Context, params CreateEdgeW
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCreateEdgeWorkerID, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/edgeworkers/v1/ids")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateEdgeWorkerID, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateEdgeWorkerID, err)
 	}
 
 	var result EdgeWorkerID
-	resp, err := e.Exec(req, &result, params)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateEdgeWorkerID, err)
 	}
@@ -237,18 +222,15 @@ func (e *edgeworkers) UpdateEdgeWorkerID(ctx context.Context, params UpdateEdgeW
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrUpdateEdgeWorkerID, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d", params.EdgeWorkerID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateEdgeWorkerID, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
+	req, err := request.NewPut(ctx, "/edgeworkers/v1/ids/%d", params.EdgeWorkerID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateEdgeWorkerID, err)
 	}
 
 	var result EdgeWorkerID
-	resp, err := e.Exec(req, &result, params.Body)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateEdgeWorkerID, err)
 	}
@@ -269,18 +251,15 @@ func (e *edgeworkers) CloneEdgeWorkerID(ctx context.Context, params CloneEdgeWor
 		return nil, fmt.Errorf("%s: %w:\n%s", ErrCloneEdgeWorkerID, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/clone", params.EdgeWorkerID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCloneEdgeWorkerID, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids/%d/clone", params.EdgeWorkerID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCloneEdgeWorkerID, err)
 	}
 
 	var result EdgeWorkerID
-	resp, err := e.Exec(req, &result, params.Body)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrCloneEdgeWorkerID, err)
 	}
@@ -300,12 +279,7 @@ func (e *edgeworkers) DeleteEdgeWorkerID(ctx context.Context, params DeleteEdgeW
 		return fmt.Errorf("%s: %w:\n%s", ErrDeleteEdgeWorkerID, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d", params.EdgeWorkerID))
-	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrDeleteEdgeWorkerID, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/edgeworkers/v1/ids/%d", params.EdgeWorkerID).Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteEdgeWorkerID, err)
 	}

@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strconv"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -372,24 +372,23 @@ func (c *cloudwrapper) GetConfiguration(ctx context.Context, params GetConfigura
 	logger.Debug("GetConfiguration")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetConfiguration, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetConfiguration, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloud-wrapper/v1/configurations/%d", params.ConfigID)
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/configurations/%d", params.ConfigID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetConfiguration, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetConfiguration, err)
 	}
 
 	var result Configuration
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetConfiguration, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetConfiguration, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetConfiguration, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetConfiguration, c.Error(resp))
 	}
 
 	return &result, nil
@@ -399,21 +398,20 @@ func (c *cloudwrapper) ListConfigurations(ctx context.Context) (*ListConfigurati
 	logger := c.Log(ctx)
 	logger.Debug("ListConfigurations")
 
-	uri := "/cloud-wrapper/v1/configurations"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/cloud-wrapper/v1/configurations").Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListConfigurations, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListConfigurations, err)
 	}
 
 	var result ListConfigurationsResponse
 	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListConfigurations, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListConfigurations, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListConfigurations, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListConfigurations, c.Error(resp))
 	}
 
 	return &result, nil
@@ -424,32 +422,26 @@ func (c *cloudwrapper) CreateConfiguration(ctx context.Context, params CreateCon
 	logger.Debug("CreateConfiguration")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateConfiguration, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateConfiguration, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/cloud-wrapper/v1/configurations")
+	req, err := request.NewPost(ctx, "/cloud-wrapper/v1/configurations").
+		AddQueryParam("activate", strconv.FormatBool(params.Activate)).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateConfiguration, err)
-	}
-
-	q := uri.Query()
-	q.Add("activate", strconv.FormatBool(params.Activate))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateConfiguration, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateConfiguration, err)
 	}
 
 	var result Configuration
-	resp, err := c.Exec(req, &result, params.Body)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateConfiguration, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateConfiguration, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", ErrCreateConfiguration, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrCreateConfiguration, c.Error(resp))
 	}
 
 	return &result, nil
@@ -460,32 +452,26 @@ func (c *cloudwrapper) UpdateConfiguration(ctx context.Context, params UpdateCon
 	logger.Debug("UpdateConfiguration")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrUpdateConfiguration, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrUpdateConfiguration, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/cloud-wrapper/v1/configurations/%d", params.ConfigID))
+	req, err := request.NewPut(ctx, "/cloud-wrapper/v1/configurations/%d", params.ConfigID).
+		AddQueryParam("activate", strconv.FormatBool(params.Activate)).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrUpdateConfiguration, err)
-	}
-
-	q := uri.Query()
-	q.Add("activate", strconv.FormatBool(params.Activate))
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPut, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrUpdateConfiguration, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrUpdateConfiguration, err)
 	}
 
 	var result Configuration
-	resp, err := c.Exec(req, &result, params.Body)
+	resp, err := c.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrUpdateConfiguration, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrUpdateConfiguration, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrUpdateConfiguration, c.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrUpdateConfiguration, c.Error(resp))
 	}
 
 	return &result, nil
@@ -496,24 +482,22 @@ func (c *cloudwrapper) DeleteConfiguration(ctx context.Context, params DeleteCon
 	logger.Debug("DeleteConfiguration")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrDeleteConfiguration, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrDeleteConfiguration, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/cloud-wrapper/v1/configurations/%d", params.ConfigID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri, nil)
+	req, err := request.NewDelete(ctx, "/cloud-wrapper/v1/configurations/%d", params.ConfigID).Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrDeleteConfiguration, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteConfiguration, err)
 	}
 
 	resp, err := c.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrDeleteConfiguration, err)
+		return fmt.Errorf("%w: request failed: %w", ErrDeleteConfiguration, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusAccepted {
-		return fmt.Errorf("%s: %w", ErrDeleteConfiguration, c.Error(resp))
+		return fmt.Errorf("%w: %w", ErrDeleteConfiguration, c.Error(resp))
 	}
 
 	return nil
@@ -524,23 +508,24 @@ func (c *cloudwrapper) ActivateConfiguration(ctx context.Context, params Activat
 	logger.Debug("ActivateConfiguration")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrActivateConfiguration, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrActivateConfiguration, ErrStructValidation, err)
 	}
 
-	uri := "/cloud-wrapper/v1/configurations/activate"
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri, nil)
+	req, err := request.NewPost(ctx, "/cloud-wrapper/v1/configurations/activate").
+		WithBody(params).
+		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrActivateConfiguration, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrActivateConfiguration, err)
 	}
 
-	resp, err := c.Exec(req, nil, params)
+	resp, err := c.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrActivateConfiguration, err)
+		return fmt.Errorf("%w: request failed: %w", ErrActivateConfiguration, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusNoContent {
-		return fmt.Errorf("%s: %w", ErrActivateConfiguration, c.Error(resp))
+		return fmt.Errorf("%w: %w", ErrActivateConfiguration, c.Error(resp))
 	}
 
 	return nil

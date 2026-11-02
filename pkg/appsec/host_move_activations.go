@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -23,16 +23,16 @@ type (
 
 	// GetHostMoveValidationRequest is used to request host move validation for a configuration
 	GetHostMoveValidationRequest struct {
-		ConfigID      int
-		ConfigVersion int
+		ConfigID      int64
+		ConfigVersion int64
 		Network       NetworkValue
 	}
 
 	// ConfigInfo represents configuration details in host move validation
 	ConfigInfo struct {
-		ConfigID      int      `json:"configId"`
+		ConfigID      int64    `json:"configId"`
 		ConfigName    string   `json:"configName"`
-		ConfigVersion int      `json:"configVersion"`
+		ConfigVersion int64    `json:"configVersion"`
 		InvalidHosts  []string `json:"invalidHosts"`
 	}
 
@@ -52,14 +52,14 @@ type (
 
 	// AcknowledgedInvalidHostsByConfig represents acknowledged invalid hosts by configuration
 	AcknowledgedInvalidHostsByConfig struct {
-		ConfigID     int      `json:"configId"`
+		ConfigID     int64    `json:"configId"`
 		InvalidHosts []string `json:"invalidHosts"`
 	}
 
 	// CreateActivationsWithHostMoveRequest is used to request activation with host move
 	CreateActivationsWithHostMoveRequest struct {
-		ConfigID                         int                                `json:"-"`
-		ConfigVersion                    int                                `json:"-"`
+		ConfigID                         int64                              `json:"-"`
+		ConfigVersion                    int64                              `json:"-"`
 		Action                           string                             `json:"action"`
 		Network                          NetworkValue                       `json:"network"`
 		Note                             string                             `json:"note"`
@@ -72,9 +72,9 @@ type (
 
 	// ActivationConfig represents configuration details in activation response
 	ActivationConfig struct {
-		ConfigID      int    `json:"configId"`
+		ConfigID      int64  `json:"configId"`
 		ConfigName    string `json:"configName"`
-		ConfigVersion int    `json:"configVersion"`
+		ConfigVersion int64  `json:"configVersion"`
 	}
 
 	// CreateActivationsWithHostMoveResponse is returned from a call to CreateActivationsWithHostMove

@@ -5,12 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"strings"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -523,18 +523,15 @@ func (d *domainownership) AddDomains(ctx context.Context, params AddDomainsReque
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrAddDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrAddDomains, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/domain-validation/v1/domains").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrAddDomains, err)
 	}
 
 	var result AddDomainsResponse
-	resp, err := d.Exec(req, &result, params)
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrAddDomains, err)
 	}
@@ -555,17 +552,9 @@ func (d *domainownership) DeleteDomain(ctx context.Context, params DeleteDomainR
 		return fmt.Errorf("%w: %w:\n%w", ErrDeleteDomain, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/domain-validation/v1/domains/%s", params.DomainName))
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteDomain, err)
-	}
-
-	q := uri.Query()
-	q.Add("validationScope", string(params.ValidationScope))
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
+	req, err := request.NewDelete(ctx, "/domain-validation/v1/domains/%s", params.DomainName).
+		AddQueryParam("validationScope", string(params.ValidationScope)).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteDomain, err)
 	}
@@ -591,17 +580,14 @@ func (d *domainownership) DeleteDomains(ctx context.Context, params DeleteDomain
 		return fmt.Errorf("%w: %w: %w", ErrDeleteDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains")
+	req, err := request.NewDelete(ctx, "/domain-validation/v1/domains").
+		WithBody(params).
+		Build()
 	if err != nil {
 		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteDomains, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodDelete, uri.String(), nil)
-	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %w", ErrDeleteDomains, err)
-	}
-
-	resp, err := d.Exec(req, nil, params)
+	resp, err := d.Exec(req, nil)
 	if err != nil {
 		return fmt.Errorf("%w: request failed: %w", ErrDeleteDomains, err)
 	}
@@ -622,26 +608,13 @@ func (d *domainownership) ListDomains(ctx context.Context, params ListDomainsReq
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrListDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListDomains, err)
-	}
-
-	q := uri.Query()
-	if params.Paginate != nil {
-		q.Add("paginate", fmt.Sprintf("%t", *params.Paginate))
-	}
-
-	if params.Page != 0 {
-		q.Add("page", fmt.Sprintf("%d", params.Page))
-	}
-
-	if params.PageSize != 0 {
-		q.Add("pageSize", fmt.Sprintf("%d", params.PageSize))
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/domain-validation/v1/domains").
+		AddQueryParamFunc("paginate", func() string {
+			return fmt.Sprintf("%t", *params.Paginate)
+		}, params.Paginate != nil).
+		AddQueryParamIf("page", fmt.Sprintf("%d", params.Page), params.Page != 0).
+		AddQueryParamIf("pageSize", fmt.Sprintf("%d", params.PageSize), params.PageSize != 0).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListDomains, err)
 	}
@@ -668,21 +641,10 @@ func (d *domainownership) GetDomain(ctx context.Context, params GetDomainRequest
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrGetDomain, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/domain-validation/v1/domains/%s", params.DomainName))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetDomain, err)
-	}
-
-	q := uri.Query()
-	q.Add("validationScope", string(params.ValidationScope))
-
-	if params.IncludeDomainStatusHistory {
-		q.Add("includeDomainStatusHistory", fmt.Sprintf("%t", params.IncludeDomainStatusHistory))
-	}
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/domain-validation/v1/domains/%s", params.DomainName).
+		AddQueryParam("validationScope", string(params.ValidationScope)).
+		AddQueryParamIf("includeDomainStatusHistory", fmt.Sprintf("%t", params.IncludeDomainStatusHistory), params.IncludeDomainStatusHistory).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetDomain, err)
 	}
@@ -709,26 +671,16 @@ func (d *domainownership) SearchDomains(ctx context.Context, params SearchDomain
 		return nil, fmt.Errorf("%w: %w:\n%w", ErrSearchDomains, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/domain-validation/v1/domains/search")
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %w", ErrSearchDomains, err)
-	}
-
-	q := uri.Query()
-
-	if params.IncludeAll {
-		q.Add("includeAll", fmt.Sprintf("%t", params.IncludeAll))
-	}
-
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/domain-validation/v1/domains/search").
+		AddQueryParamIf("includeAll", fmt.Sprintf("%t", params.IncludeAll), params.IncludeAll).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %w", ErrSearchDomains, err)
 	}
 
 	var result SearchDomainsResponse
-	resp, err := d.Exec(req, &result, params.Body)
+	resp, err := d.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %w", ErrSearchDomains, err)
 	}

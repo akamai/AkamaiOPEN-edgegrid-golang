@@ -8,8 +8,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/test"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/test"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -447,6 +447,32 @@ func TestUploadClientCertificateVersion(t *testing.T) {
 					"certificate": "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----"
  			}`,
 			expectedPath: "/mtls-origin-keystore/v1/client-certificates/123/versions/1/certificate-block",
+		},
+		"200 - upload with warnings acknowledged": {
+			request: UploadSignedClientCertificateRequest{
+				CertificateID:          123,
+				Version:                1,
+				AcknowledgeAllWarnings: ptr.To(true),
+				Body: UploadSignedClientCertificateRequestBody{
+					Certificate: "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+				},
+			},
+			responseStatus:      http.StatusOK,
+			expectedRequestBody: `{"certificate": "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----"}`,
+			expectedPath:        "/mtls-origin-keystore/v1/client-certificates/123/versions/1/certificate-block?acknowledgeAllWarnings=true",
+		},
+		"200 - upload with warnings explicitly not acknowledged": {
+			request: UploadSignedClientCertificateRequest{
+				CertificateID:          123,
+				Version:                1,
+				AcknowledgeAllWarnings: ptr.To(false),
+				Body: UploadSignedClientCertificateRequestBody{
+					Certificate: "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----",
+				},
+			},
+			responseStatus:      http.StatusOK,
+			expectedRequestBody: `{"certificate": "-----BEGIN CERTIFICATE-----....-----END CERTIFICATE-----"}`,
+			expectedPath:        "/mtls-origin-keystore/v1/client-certificates/123/versions/1/certificate-block?acknowledgeAllWarnings=false",
 		},
 		"Validation error - missing CertificateID": {
 			request: UploadSignedClientCertificateRequest{

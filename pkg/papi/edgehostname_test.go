@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/ptr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/ptr"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -25,16 +25,16 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
 	}{
 		"200 OK": {
 			params: GetEdgeHostnamesRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
+				Options:    "mapDetails",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
     "accountId": "acc",
-    "contractId": "contract",
-    "groupId": "group",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
     "edgeHostnames": {
         "items": [
             {
@@ -45,42 +45,48 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
                 "domainSuffix": "edgekey.net",
                 "status": "PENDING",
                 "secure": true,
-                "ipVersionBehavior": "IPV4"
+                "ipVersionBehavior": "IPV4",
+				"mapDetails:serialNumber": 4321,
+                "mapDetails:slotNumber": 12345,
+                "mapDetails:mapDomain": "example.com.edgekey.net"
             }
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567&options=mapDetails",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostnames: EdgeHostnameItems{Items: []EdgeHostnameGetItem{
 					{
-						ID:                "ehID",
-						Domain:            "example.com.edgekey.net",
-						ProductID:         "prdID",
-						DomainPrefix:      "example.com",
-						DomainSuffix:      "edgekey.net",
-						Status:            "PENDING",
-						Secure:            true,
-						IPVersionBehavior: "IPV4",
-						UseCases:          nil,
+						ID:                     "ehID",
+						Domain:                 "example.com.edgekey.net",
+						ProductID:              "prdID",
+						DomainPrefix:           "example.com",
+						DomainSuffix:           "edgekey.net",
+						Status:                 "PENDING",
+						Secure:                 true,
+						IPVersionBehavior:      "IPV4",
+						MapDetailsSerialNumber: ptr.To(int64(4321)),
+						MapDetailsSlotNumber:   ptr.To(int64(12345)),
+						MapDetailsMapDomain:    ptr.To("example.com.edgekey.net"),
+						UseCases:               nil,
 					},
 				}},
 			},
 		},
 		"200 OK with HTTPSServiceBinding": {
 			params: GetEdgeHostnamesRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
     "accountId": "acc",
-    "contractId": "contract",
-    "groupId": "group",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
     "edgeHostnames": {
         "items": [
             {
@@ -97,11 +103,11 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostnames: EdgeHostnameItems{Items: []EdgeHostnameGetItem{
 					{
 						ID:                  "ehID",
@@ -118,10 +124,80 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
 				}},
 			},
 		},
+		"200 OK with deliveryPolicy": {
+			params: GetEdgeHostnamesRequest{
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
+				Options:    "mapDetails",
+			},
+			responseStatus: http.StatusOK,
+			responseBody: `
+{
+    "accountId": "acc",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
+    "edgeHostnames": {
+        "items": [
+			{
+				"deliveryPolicy": {
+					"policyType": "GEO_OPT_IN",
+					"policyAttributes": [
+						{
+							"attributeType": "GEO",
+							"code": "US",
+							"name": "USA"
+						}
+					]
+				},
+                "edgeHostnameId": "ehID",
+                "edgeHostnameDomain": "example.com.edgekey.net",
+                "productId": "prdID",
+                "domainPrefix": "example.com",
+                "domainSuffix": "edgekey.net",
+                "status": "PENDING",
+                "secure": true,
+                "ipVersionBehavior": "IPV4",
+				"mapDetails:serialNumber": 0,
+                "mapDetails:slotNumber": 12345
+            }
+        ]
+    }
+}`,
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567&options=mapDetails",
+			expectedResponse: &GetEdgeHostnamesResponse{
+				AccountID:  "acc",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
+				EdgeHostnames: EdgeHostnameItems{Items: []EdgeHostnameGetItem{
+					{
+						ID:        "ehID",
+						Domain:    "example.com.edgekey.net",
+						ProductID: "prdID",
+						DeliveryPolicy: &DeliveryPolicy{
+							PolicyType: "GEO_OPT_IN",
+							PolicyAttributes: []PolicyAttribute{
+								{AttributeType: "GEO",
+									Code: "US",
+									Name: "USA",
+								},
+							},
+						},
+						DomainPrefix:           "example.com",
+						DomainSuffix:           "edgekey.net",
+						Status:                 "PENDING",
+						Secure:                 true,
+						IPVersionBehavior:      "IPV4",
+						MapDetailsSerialNumber: ptr.To(int64(0)),
+						MapDetailsSlotNumber:   ptr.To(int64(12345)),
+						UseCases:               nil,
+					},
+				}},
+			},
+		},
 		"500 internal server error": {
 			params: GetEdgeHostnamesRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -131,7 +207,7 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
     "detail": "Error fetching edge hostnames",
     "status": 500
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -144,7 +220,7 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
 		},
 		"empty group ID": {
 			params: GetEdgeHostnamesRequest{
-				ContractID: "contract",
+				ContractID: "ctr_123",
 				GroupID:    "",
 			},
 			withError: func(t *testing.T, err error) {
@@ -156,7 +232,7 @@ func TestPapiGetEdgeHostnames(t *testing.T) {
 		"empty contract ID": {
 			params: GetEdgeHostnamesRequest{
 				ContractID: "",
-				GroupID:    "group",
+				GroupID:    "grp_567",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -208,16 +284,16 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 		"200 OK": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
-				GroupID:        "group",
-				Options:        []string{"opt1", "opt2"},
+				ContractID:     "ctr_123",
+				GroupID:        "grp_567",
+				Options:        "mapDetails",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
     "accountId": "acc",
-    "contractId": "contract",
-    "groupId": "group",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
     "edgeHostnames": {
         "items": [
             {
@@ -228,54 +304,57 @@ func TestPapiGetEdgeHostname(t *testing.T) {
                 "domainSuffix": "edgekey.net",
                 "status": "PENDING",
                 "secure": true,
-                "ipVersionBehavior": "IPV4"
+                "ipVersionBehavior": "IPV4",
+                "mapDetails:serialNumber": 4321
             }
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&groupId=grp_567&options=mapDetails",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostnames: EdgeHostnameItems{Items: []EdgeHostnameGetItem{
 					{
-						ID:                "ehID",
-						Domain:            "example.com.edgekey.net",
-						ProductID:         "prdID",
-						DomainPrefix:      "example.com",
-						DomainSuffix:      "edgekey.net",
-						Status:            "PENDING",
-						Secure:            true,
-						IPVersionBehavior: "IPV4",
-						UseCases:          nil,
+						ID:                     "ehID",
+						Domain:                 "example.com.edgekey.net",
+						ProductID:              "prdID",
+						DomainPrefix:           "example.com",
+						DomainSuffix:           "edgekey.net",
+						Status:                 "PENDING",
+						Secure:                 true,
+						IPVersionBehavior:      "IPV4",
+						MapDetailsSerialNumber: ptr.To(int64(4321)),
+						UseCases:               nil,
 					},
 				}},
 				EdgeHostname: EdgeHostnameGetItem{
-					ID:                "ehID",
-					Domain:            "example.com.edgekey.net",
-					ProductID:         "prdID",
-					DomainPrefix:      "example.com",
-					DomainSuffix:      "edgekey.net",
-					Status:            "PENDING",
-					Secure:            true,
-					IPVersionBehavior: "IPV4",
-					UseCases:          nil,
+					ID:                     "ehID",
+					Domain:                 "example.com.edgekey.net",
+					ProductID:              "prdID",
+					DomainPrefix:           "example.com",
+					DomainSuffix:           "edgekey.net",
+					Status:                 "PENDING",
+					Secure:                 true,
+					IPVersionBehavior:      "IPV4",
+					MapDetailsSerialNumber: ptr.To(int64(4321)),
+					UseCases:               nil,
 				},
 			},
 		},
 		"200 OK with HTTPSServiceBinding": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
-				GroupID:        "group",
+				ContractID:     "ctr_123",
+				GroupID:        "grp_567",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
     "accountId": "acc",
-    "contractId": "contract",
-    "groupId": "group",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
     "edgeHostnames": {
         "items": [
             {
@@ -292,11 +371,11 @@ func TestPapiGetEdgeHostname(t *testing.T) {
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &GetEdgeHostnamesResponse{
 				AccountID:  "acc",
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostnames: EdgeHostnameItems{Items: []EdgeHostnameGetItem{
 					{
 						ID:                  "ehID",
@@ -328,22 +407,22 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 		"Edge hostname not found": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
-				GroupID:        "group",
-				Options:        []string{"opt1", "opt2"},
+				ContractID:     "ctr_123",
+				GroupID:        "grp_567",
+				Options:        "mapDetails",
 			},
 			responseStatus: http.StatusOK,
 			responseBody: `
 {
     "accountId": "acc",
-    "contractId": "contract",
-    "groupId": "group",
+    "contractId": "ctr_123",
+    "groupId": "grp_567",
     "edgeHostnames": {
         "items": [
         ]
     }
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&groupId=grp_567&options=mapDetails",
 			withError: func(t *testing.T, err error) {
 				assert.True(t, errors.Is(err, ErrNotFound), "want: %v; got: %v", ErrNotFound, err)
 			},
@@ -351,8 +430,8 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 		"500 internal server error": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
-				GroupID:        "group",
+				ContractID:     "ctr_123",
+				GroupID:        "grp_567",
 			},
 			responseStatus: http.StatusInternalServerError,
 			responseBody: `
@@ -362,7 +441,7 @@ func TestPapiGetEdgeHostname(t *testing.T) {
     "detail": "Error fetching edge hostnames",
     "status": 500
 }`,
-			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&groupId=grp_567",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -376,7 +455,7 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 		"empty group ID": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
-				ContractID:     "contract",
+				ContractID:     "ctr_123",
 				GroupID:        "",
 			},
 			withError: func(t *testing.T, err error) {
@@ -389,7 +468,7 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "ehID",
 				ContractID:     "",
-				GroupID:        "group",
+				GroupID:        "grp_567",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -400,8 +479,8 @@ func TestPapiGetEdgeHostname(t *testing.T) {
 		"empty edge hostname ID": {
 			params: GetEdgeHostnameRequest{
 				EdgeHostnameID: "",
-				ContractID:     "contract",
-				GroupID:        "group",
+				ContractID:     "ctr_123",
+				GroupID:        "grp_567",
 			},
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
@@ -455,9 +534,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 	}{
 		"200 OK": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -475,19 +553,18 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
-    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
-				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567",
 				EdgeHostnameID:   "ehID",
 			},
 		},
 		"200 OK - STANDARD_TLS": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -502,19 +579,18 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
-    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
-				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567",
 				EdgeHostnameID:   "ehID",
 			},
 		},
 		"200 OK - SHARED_CERT": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example-com",
@@ -529,19 +605,18 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
-    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
-				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567",
 				EdgeHostnameID:   "ehID",
 			},
 		},
 		"200 OK - ENHANCED_TLS": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -557,19 +632,18 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
-    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
-				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567",
 				EdgeHostnameID:   "ehID",
 			},
 		},
 		"200 OK - with HTTPSServiceBinding": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:           "product",
 					DomainPrefix:        "example.com",
@@ -585,19 +659,18 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			responseStatus:      http.StatusCreated,
 			responseBody: `
 {
-    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
+    "edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
-				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
+				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=ctr_123&group=grp_567",
 				EdgeHostnameID:   "ehID",
 			},
 		},
 		"500 Internal Server Error": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -615,7 +688,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
     "detail": "Error creating edge hostname",
     "status": 500
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			withError: func(t *testing.T, err error) {
 				want := &Error{
 					Type:       "internal_error",
@@ -628,7 +701,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"empty group ID": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
+				ContractID: "ctr_123",
 				GroupID:    "",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
@@ -639,6 +712,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 					UseCases:          nil,
 				},
 			},
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=",
 			withError: func(t *testing.T, err error) {
 				want := ErrStructValidation
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)
@@ -683,8 +757,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"empty domain prefix": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "",
@@ -702,8 +776,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"empty domain suffix": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -721,8 +795,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix for the akamaized.net domain suffix - The character '#' isn't allowed in the domain prefix.": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "tes#t",
@@ -739,8 +813,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix for the `akamaized.net` domain suffix. The domain prefix contains non-UTF-8 characters ('t中esãt').": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "t中esãt",
@@ -757,8 +831,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix for `akamaized.net`. The domain prefix can't end with a hyphen": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "test-",
@@ -775,8 +849,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix for `edgesuite.net`. The domain prefix can't end with two consecutive dots": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "test..",
@@ -793,8 +867,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix. The domain prefix exceeds the maximum allowed length of 63 characters": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "testABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz01234567",
@@ -811,8 +885,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix. The domain prefix less the minimum required length of 4 characters": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "nm1",
@@ -829,8 +903,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid edge hostname domain prefix. The domain prefix less the minimum required length of 1 character": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "",
@@ -847,8 +921,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"valid edge hostname with hyphen in domain prefix name for akamaized.net, create edge hostname": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "test-1",
@@ -863,7 +937,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 			{
     			"edgeHostnameLink": "/papi/v1/edgehostnames/ehID?contractId=contract&group=group"
 			}`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			expectedResponse: &CreateEdgeHostnameResponse{
 				EdgeHostnameLink: "/papi/v1/edgehostnames/ehID?contractId=contract&group=group",
 				EdgeHostnameID:   "ehID",
@@ -871,8 +945,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"empty product id": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "",
 					DomainPrefix:      "example.com",
@@ -890,8 +964,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"CertEnrollmentID is required for SecureNetwork == ENHANCED_TLS": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -910,8 +984,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"SecureNetwork has invalid value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -930,8 +1004,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"DomainSuffix has invalid value for SecureNetwork == STANDARD_TLS": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -950,8 +1024,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"DomainSuffix has invalid value for SecureNetwork == SHARED_CERT": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -970,8 +1044,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"DomainSuffix has invalid value for SecureNetwork == ENHANCED_TLS": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -990,8 +1064,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"IPVersionBehavior has invalid value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -1009,8 +1083,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"UseCase has empty UseCase value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -1032,8 +1106,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"UseCase has empty Option value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -1055,8 +1129,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"UseCase has invalid Type value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -1078,8 +1152,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"HTTPSServiceBinding has invalid value": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:           "product",
 					DomainPrefix:        "example.com",
@@ -1099,9 +1173,8 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 		},
 		"invalid location": {
 			params: CreateEdgeHostnameRequest{
-				ContractID: "contract",
-				GroupID:    "group",
-				Options:    []string{"opt1", "opt2"},
+				ContractID: "ctr_123",
+				GroupID:    "grp_567",
 				EdgeHostname: EdgeHostnameCreate{
 					ProductID:         "product",
 					DomainPrefix:      "example.com",
@@ -1120,7 +1193,7 @@ func TestPapiCreateEdgeHostname(t *testing.T) {
 {
     "edgeHostnameLink": ":"
 }`,
-			expectedPath: "/papi/v1/edgehostnames?contractId=contract&groupId=group&options=opt1%2Copt2",
+			expectedPath: "/papi/v1/edgehostnames?contractId=ctr_123&groupId=grp_567",
 			withError: func(t *testing.T, err error) {
 				want := ErrInvalidResponseLink
 				assert.True(t, errors.Is(err, want), "want: %s; got: %s", want, err)

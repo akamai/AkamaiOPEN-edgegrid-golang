@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -32,8 +32,8 @@ type (
 
 	// GetApiRequestConstraintsRequest is used to retrieve the list of APIs with their constraints and associated actions.
 	GetApiRequestConstraintsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		ApiID    int    `json:"-"`
 	}
@@ -51,8 +51,8 @@ type (
 
 	// UpdateApiRequestConstraintsRequest is used to modify the action taken when an API request contraint is triggered.
 	UpdateApiRequestConstraintsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		ApiID    int    `json:"-"`
 		Action   string `json:"action"`
@@ -65,8 +65,8 @@ type (
 
 	// RemoveApiRequestConstraintsRequest is used to remove an API request constraint's action.
 	RemoveApiRequestConstraintsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		PolicyID string `json:"-"`
 		ApiID    int    `json:"-"`
 		Action   string `json:"action"`

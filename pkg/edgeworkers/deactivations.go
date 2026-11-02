@@ -5,9 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -108,18 +108,9 @@ func (e *edgeworkers) ListDeactivations(ctx context.Context, params ListDeactiva
 		return nil, fmt.Errorf("%s: %w: %s", ErrListDeactivations, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/deactivations", params.EdgeWorkerID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrListDeactivations, err.Error())
-	}
-
-	q := uri.Query()
-	if params.Version != "" {
-		q.Add("version", params.Version)
-	}
-	uri.RawQuery = q.Encode()
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/deactivations", params.EdgeWorkerID).
+		AddQueryParamIf("version", params.Version, params.Version != "").
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListDeactivations, err.Error())
 	}
@@ -146,18 +137,15 @@ func (e *edgeworkers) DeactivateVersion(ctx context.Context, params DeactivateVe
 		return nil, fmt.Errorf("%s: %w: %s", ErrDeactivateVersion, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/deactivations", params.EdgeWorkerID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrDeactivateVersion, err.Error())
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
+	req, err := request.NewPost(ctx, "/edgeworkers/v1/ids/%d/deactivations", params.EdgeWorkerID).
+		WithBody(params.DeactivateVersion).
+		Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrDeactivateVersion, err.Error())
 	}
 
 	var result Deactivation
-	resp, err := e.Exec(req, &result, params.DeactivateVersion)
+	resp, err := e.Exec(req, &result)
 	if err != nil {
 		return nil, fmt.Errorf("%w: request failed: %s", ErrDeactivateVersion, err.Error())
 	}
@@ -178,12 +166,7 @@ func (e *edgeworkers) GetDeactivation(ctx context.Context, params GetDeactivatio
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetDeactivation, ErrStructValidation, err.Error())
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/edgeworkers/v1/ids/%d/deactivations/%d", params.EdgeWorkerID, params.DeactivationID))
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse URL: %s", ErrGetDeactivation, err.Error())
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/ids/%d/deactivations/%d", params.EdgeWorkerID, params.DeactivationID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("failed to create GetDeactivation request: %w", err)
 	}

@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/internal/request"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/go-ozzo/ozzo-validation/v4/is"
 )
@@ -107,7 +107,7 @@ type (
 		TimeZone                 string         `json:"timeZone,omitempty"`
 		JobTitle                 string         `json:"jobTitle"`
 		TFAEnabled               bool           `json:"tfaEnabled"`
-		SecondaryEmail           string         `json:"secondaryEmail,omitempty"`
+		SecondaryEmail           *string        `json:"secondaryEmail,omitempty"`
 		MobilePhone              string         `json:"mobilePhone,omitempty"`
 		Address                  string         `json:"address,omitempty"`
 		City                     string         `json:"city,omitempty"`

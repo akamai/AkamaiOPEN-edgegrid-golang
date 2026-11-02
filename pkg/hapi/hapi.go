@@ -7,7 +7,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 )
 
 var (
@@ -24,7 +24,17 @@ type (
 		// that is provided when you make a change request.
 		//
 		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-changeid
-		GetChangeRequest(context.Context, GetChangeRequest) (*ChangeRequest, error)
+		GetChangeRequest(context.Context, GetChangeRequestRequest) (*GetChangeRequestResponse, error)
+
+		// ListChangeRequests lists pending change requests for the logged-in account and context.
+		//
+		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-change-requests
+		ListChangeRequests(context.Context, ListChangeRequestsRequest) (*ListChangeRequestsResponse, error)
+
+		// ListChangeRequestsPerEdgeHostname lists all change requests for the specified edge hostname.
+		//
+		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostname-change-requests
+		ListChangeRequestsPerEdgeHostname(context.Context, ListChangeRequestsPerEdgeHostnameRequest) (*ListChangeRequestsPerEdgeHostnameResponse, error)
 
 		// EdgeHostnames
 
@@ -39,7 +49,7 @@ type (
 		// and China CDN or Edge IP Binding status.
 		//
 		// See: https://techdocs.akamai.com/edge-hostnames/reference/get-edgehostnameid
-		GetEdgeHostname(context.Context, int) (*GetEdgeHostnameResponse, error)
+		GetEdgeHostname(context.Context, GetEdgeHostnameRequest) (*GetEdgeHostnameResponse, error)
 
 		// UpdateEdgeHostname allows update ttl (path = "/ttl"), IpVersionBehavior (path = "/ipVersionBehavior") or HTTPSServiceBinding (path = "/httpsServiceBinding") of a specific edge hostname.
 		//

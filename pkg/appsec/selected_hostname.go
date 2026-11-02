@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -43,8 +43,8 @@ type (
 
 	// GetSelectedHostnamesRequest is used to retrieve the selected hostnames for a configuration.
 	GetSelectedHostnamesRequest struct {
-		ConfigID     int        `json:"configId"`
-		Version      int        `json:"version"`
+		ConfigID     int64      `json:"configId"`
+		Version      int64      `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
@@ -56,8 +56,8 @@ type (
 	// GetSelectedHostnameRequest is used to retrieve the selected hostnames for a configuration.
 	// Deprecated: this struct will be removed in a future release.
 	GetSelectedHostnameRequest struct {
-		ConfigID     int        `json:"configId"`
-		Version      int        `json:"version"`
+		ConfigID     int64      `json:"configId"`
+		Version      int64      `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
@@ -69,8 +69,8 @@ type (
 
 	// UpdateSelectedHostnamesRequest is used to modify the selected hostnames for a configuration.
 	UpdateSelectedHostnamesRequest struct {
-		ConfigID     int        `json:"configId"`
-		Version      int        `json:"version"`
+		ConfigID     int64      `json:"configId"`
+		Version      int64      `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 
@@ -82,8 +82,8 @@ type (
 	// UpdateSelectedHostnameRequest is used to modify the selected hostnames for a configuration.
 	// Deprecated: this struct will be removed in a future release.
 	UpdateSelectedHostnameRequest struct {
-		ConfigID     int        `json:"configId"`
-		Version      int        `json:"version"`
+		ConfigID     int64      `json:"configId"`
+		Version      int64      `json:"version"`
 		HostnameList []Hostname `json:"hostnameList"`
 	}
 

@@ -8,7 +8,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/errs"
 )
 
 var (
@@ -145,10 +145,6 @@ var (
 	// to production, support renewal.
 	ErrSingleGenerationNoRenew = &Error{Type: "/error-types/single-generation-no-renew"}
 
-	// ErrHeadDeployedOnNetwork represents an error when renewing a lineage whose head generation is currently
-	// deployed on staging or production. The head must be promoted or rolled back before renewal.
-	ErrHeadDeployedOnNetwork = &Error{Type: "/error-types/head-deployed-on-network"}
-
 	// ErrRenewBlockedHeadOnStaging represents an error when renewing a lineage that has both a head generation
 	// and a staging generation present simultaneously. The head generation must be promoted or abandoned first.
 	ErrRenewBlockedHeadOnStaging = &Error{Type: "/error-types/renew-blocked-head-on-staging"}
@@ -157,9 +153,13 @@ var (
 	// still-valid, unexpired certificate. Set `ConfirmAbandonHead` on the request to explicitly abandon it.
 	ErrConfirmationRequired = &Error{Type: "/error-types/confirmation-required"}
 
-	// ErrNotMultipleStack represents an error when completing a lineage that is not MULTIPLE_STACK type. Only
+	// ErrNotMultipleStack represents an error when completing a lineage that is not of type MULTIPLE_STACK. Only
 	// MULTIPLE_STACK lineages support the complete operation.
 	ErrNotMultipleStack = &Error{Type: "/error-types/not-multiple-stack"}
+
+	// ErrSingleGenerationNoComplete represents an error when completing a lineage that is of type SINGLE_GENERATION. Only
+	// MULTIPLE_GENERATION lineages support the complete operation.
+	ErrSingleGenerationNoComplete = &Error{Type: "/error-types/single-generation-no-complete"}
 
 	// ErrNoCurrentProduction represents an error when completing a lineage that has no current production
 	// generation to complete.
@@ -169,18 +169,6 @@ var (
 	// pending head generation already exists, no unique CSR_READY algorithm was found, or the given key type
 	// does not match the CSR_READY algorithm on current production.
 	ErrCompletePreconditionFailed = &Error{Type: "/error-types/complete-precondition-failed"}
-
-	// ErrCSRExpired represents an error when completing a lineage whose stored CSR for the given key type has
-	// expired.
-	ErrCSRExpired = &Error{Type: "/error-types/csr-expired"}
-
-	// ErrCertSANMismatch represents an error when the uploaded certificate's SANs do not match the lineage's
-	// SANs.
-	ErrCertSANMismatch = &Error{Type: "/error-types/cert-san-mismatch"}
-
-	// ErrCertSubjectMismatch represents an error when the uploaded certificate's non-common-name subject fields
-	// differ from the stored CSR's subject fields.
-	ErrCertSubjectMismatch = &Error{Type: "/error-types/cert-subject-mismatch"}
 
 	// ErrMediaTypeNotSupported represents an error when the request media type is not supported.
 	ErrMediaTypeNotSupported = &Error{Type: "/error-types/media-type-not-supported"}

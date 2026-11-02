@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -45,45 +45,19 @@ type (
 
 	// GetNetworkListResponse contains response from GetNetworkList method
 	GetNetworkListResponse struct {
-		Name            string   `json:"name"`
-		UniqueID        string   `json:"uniqueId"`
-		ContractID      string   `json:"contractId"`
-		GroupID         int      `json:"groupId"`
-		SyncPoint       int      `json:"syncPoint"`
-		Type            string   `json:"type"`
-		Description     string   `json:"description,omitempty"`
-		NetworkListType string   `json:"networkListType"`
-		ElementCount    int      `json:"elementCount"`
-		ReadOnly        bool     `json:"readOnly"`
-		Shared          bool     `json:"shared"`
-		List            []string `json:"list"`
-		Links           struct {
-			ActivateInProduction struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInProduction"`
-			ActivateInStaging struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInStaging"`
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-		} `json:"links"`
+		Name            string           `json:"name"`
+		UniqueID        string           `json:"uniqueId"`
+		ContractID      string           `json:"contractId"`
+		GroupID         int              `json:"groupId"`
+		SyncPoint       int              `json:"syncPoint"`
+		Type            string           `json:"type"`
+		Description     string           `json:"description,omitempty"`
+		NetworkListType string           `json:"networkListType"`
+		ElementCount    int              `json:"elementCount"`
+		ReadOnly        bool             `json:"readOnly"`
+		Shared          bool             `json:"shared"`
+		List            []string         `json:"list"`
+		Links           NetworkListLinks `json:"links"`
 	}
 
 	// CreateNetworkListRequest contains request parameters for CreateNetworkList method
@@ -110,51 +84,8 @@ type (
 
 	// UpdateNetworkListResponse contains response from CreateNetworkList method
 	UpdateNetworkListResponse struct {
-		Links struct {
-			Create struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"create"`
-		} `json:"links"`
-		NetworkLists []struct {
-			ElementCount int `json:"elementCount"`
-			Links        struct {
-				ActivateInProduction struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInProduction"`
-				ActivateInStaging struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"activateInStaging"`
-				AppendItems struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"appendItems"`
-				Retrieve struct {
-					Href string `json:"href"`
-				} `json:"retrieve"`
-				StatusInProduction struct {
-					Href string `json:"href"`
-				} `json:"statusInProduction"`
-				StatusInStaging struct {
-					Href string `json:"href"`
-				} `json:"statusInStaging"`
-				Update struct {
-					Href   string `json:"href"`
-					Method string `json:"method"`
-				} `json:"update"`
-			} `json:"links"`
-			Name               string `json:"name"`
-			NetworkListType    string `json:"networkListType"`
-			ReadOnly           bool   `json:"readOnly"`
-			Shared             bool   `json:"shared"`
-			SyncPoint          int    `json:"syncPoint"`
-			Type               string `json:"type"`
-			UniqueID           string `json:"uniqueId"`
-			AccessControlGroup string `json:"accessControlGroup,omitempty"`
-			Description        string `json:"description,omitempty"`
-		} `json:"networkLists"`
+		Links        NetworkListCreateLink `json:"links"`
+		NetworkLists []NetworkListItem     `json:"networkLists"`
 	}
 
 	// RemoveNetworkListRequest contains request parameters for RemoveNetworkList method
@@ -171,43 +102,48 @@ type (
 
 	// CreateNetworkListResponse contains response from CreateNetworkList method
 	CreateNetworkListResponse struct {
-		Name            string   `json:"name"`
-		Description     string   `json:"description,omitempty"`
-		UniqueID        string   `json:"uniqueId"`
-		SyncPoint       int      `json:"syncPoint"`
-		Type            string   `json:"type"`
-		NetworkListType string   `json:"networkListType"`
-		ElementCount    int      `json:"elementCount"`
-		ReadOnly        bool     `json:"readOnly"`
-		Shared          bool     `json:"shared"`
-		List            []string `json:"list"`
-		Links           struct {
-			ActivateInProduction struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInProduction"`
-			ActivateInStaging struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"activateInStaging"`
-			AppendItems struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"appendItems"`
-			Retrieve struct {
-				Href string `json:"href"`
-			} `json:"retrieve"`
-			StatusInProduction struct {
-				Href string `json:"href"`
-			} `json:"statusInProduction"`
-			StatusInStaging struct {
-				Href string `json:"href"`
-			} `json:"statusInStaging"`
-			Update struct {
-				Href   string `json:"href"`
-				Method string `json:"method"`
-			} `json:"update"`
-		} `json:"links"`
+		Name            string           `json:"name"`
+		Description     string           `json:"description,omitempty"`
+		UniqueID        string           `json:"uniqueId"`
+		SyncPoint       int              `json:"syncPoint"`
+		Type            string           `json:"type"`
+		NetworkListType string           `json:"networkListType"`
+		ElementCount    int              `json:"elementCount"`
+		ReadOnly        bool             `json:"readOnly"`
+		Shared          bool             `json:"shared"`
+		List            []string         `json:"list"`
+		Links           NetworkListLinks `json:"links"`
+	}
+
+	// NetworkListLinks encapsulates hypermedia links for network list responses.
+	NetworkListLinks struct {
+		ActivateInProduction ActivationActionLink `json:"activateInProduction"`
+		ActivateInStaging    ActivationActionLink `json:"activateInStaging"`
+		AppendItems          ActivationActionLink `json:"appendItems"`
+		Retrieve             ActivationLink       `json:"retrieve"`
+		StatusInProduction   ActivationLink       `json:"statusInProduction"`
+		StatusInStaging      ActivationLink       `json:"statusInStaging"`
+		Update               ActivationActionLink `json:"update"`
+	}
+
+	// NetworkListCreateLink contains hypermedia links for creating a network list.
+	NetworkListCreateLink struct {
+		Create ActivationActionLink `json:"create"`
+	}
+
+	// NetworkListItem describes an individual network list element in collection responses.
+	NetworkListItem struct {
+		ElementCount       int              `json:"elementCount"`
+		Links              NetworkListLinks `json:"links"`
+		Name               string           `json:"name"`
+		NetworkListType    string           `json:"networkListType"`
+		ReadOnly           bool             `json:"readOnly"`
+		Shared             bool             `json:"shared"`
+		SyncPoint          int              `json:"syncPoint"`
+		Type               string           `json:"type"`
+		UniqueID           string           `json:"uniqueId"`
+		AccessControlGroup string           `json:"accessControlGroup,omitempty"`
+		Description        string           `json:"description,omitempty"`
 	}
 
 	// LinkInfo contains hypermedia link

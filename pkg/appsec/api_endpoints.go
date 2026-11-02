@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -20,8 +20,8 @@ type (
 
 	// GetApiEndpointsRequest is used to retrieve the endpoints associated with a security policy.
 	GetApiEndpointsRequest struct {
-		ConfigID int    `json:"-"`
-		Version  int    `json:"-"`
+		ConfigID int64  `json:"-"`
+		Version  int64  `json:"-"`
 		Name     string `json:"-"`
 		PolicyID string `json:"-"`
 		ID       int    `json:"-"`
@@ -29,21 +29,24 @@ type (
 
 	// GetApiEndpointsResponse is returned from a call to GetApiEndpoints.
 	GetApiEndpointsResponse struct {
-		APIEndpoints []struct {
-			ID               int      `json:"id"`
-			Name             string   `json:"name"`
-			BasePath         string   `json:"basePath"`
-			APIEndPointHosts []string `json:"apiEndPointHosts"`
-			StagingVersion   struct {
-				Status        string `json:"status"`
-				VersionNumber int    `json:"versionNumber"`
-			} `json:"stagingVersion"`
-			ProductionVersion struct {
-				Status        string `json:"status"`
-				VersionNumber int    `json:"versionNumber"`
-			} `json:"productionVersion"`
-			RequestConstraintsEnabled bool `json:"requestConstraintsEnabled"`
-		} `json:"apiEndpoints"`
+		APIEndpoints []ApiEndpointItem `json:"apiEndpoints"`
+	}
+
+	// ApiEndpointItem describes an API endpoint associated with a security policy.
+	ApiEndpointItem struct {
+		ID                        int                `json:"id"`
+		Name                      string             `json:"name"`
+		BasePath                  string             `json:"basePath"`
+		APIEndPointHosts          []string           `json:"apiEndPointHosts"`
+		StagingVersion            ApiEndpointVersion `json:"stagingVersion"`
+		ProductionVersion         ApiEndpointVersion `json:"productionVersion"`
+		RequestConstraintsEnabled bool               `json:"requestConstraintsEnabled"`
+	}
+
+	// ApiEndpointVersion describes version status and number of an API endpoint in staging or production.
+	ApiEndpointVersion struct {
+		Status        string `json:"status"`
+		VersionNumber int    `json:"versionNumber"`
 	}
 )
 

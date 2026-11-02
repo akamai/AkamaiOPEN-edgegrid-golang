@@ -5,19 +5,28 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/url"
 	"time"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/edgegriderr"
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/edgegriderr"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
 type (
+	// ListClientCertificatesRequest is a request to list client certificates.
+	ListClientCertificatesRequest struct {
+	}
+
 	// ListClientCertificatesResponse is the response from the ListClientCertificates API.
 	ListClientCertificatesResponse struct {
 		// Certificates is the list of client certificates.
-		Certificates []Certificate `json:"certificates"`
+		Certificates []ListClientCertificatesResponseItem `json:"certificates"`
+	}
+
+	// ListClientCertificatesResponseItem is a client certificate returned by the ListClientCertificates API.
+	ListClientCertificatesResponseItem struct {
+		Certificate
 	}
 
 	// Geography represents the geography type: `CORE`, `RUSSIA_AND_CORE`, or `CHINA_AND_CORE`.
@@ -271,29 +280,24 @@ func preferredCAValidate(r CreateClientCertificateRequest) func(any) error {
 	}
 }
 
-func (m *mtlskeystore) ListClientCertificates(ctx context.Context) (*ListClientCertificatesResponse, error) {
+func (m *mtlskeystore) ListClientCertificates(ctx context.Context, _ ListClientCertificatesRequest) (*ListClientCertificatesResponse, error) {
 	logger := m.Log(ctx)
 	logger.Debug("ListClientCertificates")
 
-	uri, err := url.Parse("/mtls-origin-keystore/v1/client-certificates")
+	req, err := request.NewGet(ctx, "/mtls-origin-keystore/v1/client-certificates").Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrListClientCertificates, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListClientCertificates, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrListClientCertificates, err)
 	}
 
 	var result ListClientCertificatesResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrListClientCertificates, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrListClientCertificates, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrListClientCertificates, m.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrListClientCertificates, m.Error(resp))
 	}
 
 	return &result, nil
@@ -304,28 +308,23 @@ func (m *mtlskeystore) GetClientCertificate(ctx context.Context, params GetClien
 	logger.Debug("GetClientCertificate")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrGetClientCertificate, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrGetClientCertificate, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-origin-keystore/v1/client-certificates/%d", params.CertificateID))
+	req, err := request.NewGet(ctx, "/mtls-origin-keystore/v1/client-certificates/%d", params.CertificateID).Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrGetClientCertificate, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetClientCertificate, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrGetClientCertificate, err)
 	}
 
 	var result GetClientCertificateResponse
 	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrGetClientCertificate, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrGetClientCertificate, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("%s: %w", ErrGetClientCertificate, m.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrGetClientCertificate, m.Error(resp))
 	}
 
 	return &result, nil
@@ -336,28 +335,25 @@ func (m *mtlskeystore) CreateClientCertificate(ctx context.Context, params Creat
 	logger.Debug("CreateClientCertificate")
 
 	if err := params.Validate(); err != nil {
-		return nil, fmt.Errorf("%s: %w: %s", ErrCreateClientCertificate, ErrStructValidation, err)
+		return nil, fmt.Errorf("%w: %w: %w", ErrCreateClientCertificate, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse("/mtls-origin-keystore/v1/client-certificates")
+	req, err := request.NewPost(ctx, "/mtls-origin-keystore/v1/client-certificates").
+		WithBody(params).
+		Build()
 	if err != nil {
-		return nil, fmt.Errorf("%w: failed to parse url: %s", ErrCreateClientCertificate, err)
-	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, uri.String(), nil)
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to create request: %s", ErrCreateClientCertificate, err)
+		return nil, fmt.Errorf("%w: failed to create request: %w", ErrCreateClientCertificate, err)
 	}
 
 	var result CreateClientCertificateResponse
-	resp, err := m.Exec(req, &result, params)
+	resp, err := m.Exec(req, &result)
 	if err != nil {
-		return nil, fmt.Errorf("%w: request failed: %s", ErrCreateClientCertificate, err)
+		return nil, fmt.Errorf("%w: request failed: %w", ErrCreateClientCertificate, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusCreated {
-		return nil, fmt.Errorf("%s: %w", ErrCreateClientCertificate, m.Error(resp))
+		return nil, fmt.Errorf("%w: %w", ErrCreateClientCertificate, m.Error(resp))
 	}
 
 	return &result, nil
@@ -368,27 +364,24 @@ func (m *mtlskeystore) PatchClientCertificate(ctx context.Context, params PatchC
 	logger.Debug("PatchClientCertificate")
 
 	if err := params.Validate(); err != nil {
-		return fmt.Errorf("%s: %w: %s", ErrPatchClientCertificate, ErrStructValidation, err)
+		return fmt.Errorf("%w: %w: %w", ErrPatchClientCertificate, ErrStructValidation, err)
 	}
 
-	uri, err := url.Parse(fmt.Sprintf("/mtls-origin-keystore/v1/client-certificates/%d", params.CertificateID))
+	req, err := request.NewPatch(ctx, "/mtls-origin-keystore/v1/client-certificates/%d", params.CertificateID).
+		WithBody(params.Body).
+		Build()
 	if err != nil {
-		return fmt.Errorf("%w: failed to parse url: %s", ErrPatchClientCertificate, err)
+		return fmt.Errorf("%w: failed to create request: %w", ErrPatchClientCertificate, err)
 	}
 
-	req, err := http.NewRequestWithContext(ctx, http.MethodPatch, uri.String(), nil)
+	resp, err := m.Exec(req, nil)
 	if err != nil {
-		return fmt.Errorf("%w: failed to create request: %s", ErrPatchClientCertificate, err)
-	}
-
-	resp, err := m.Exec(req, nil, params.Body)
-	if err != nil {
-		return fmt.Errorf("%w: request failed: %s", ErrPatchClientCertificate, err)
+		return fmt.Errorf("%w: request failed: %w", ErrPatchClientCertificate, err)
 	}
 	defer session.CloseResponseBody(resp)
 
 	if resp.StatusCode != http.StatusOK {
-		return fmt.Errorf("%s: %w", ErrPatchClientCertificate, m.Error(resp))
+		return fmt.Errorf("%w: %w", ErrPatchClientCertificate, m.Error(resp))
 	}
 
 	return nil

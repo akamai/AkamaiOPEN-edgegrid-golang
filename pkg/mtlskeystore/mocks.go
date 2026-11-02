@@ -15,8 +15,8 @@ type Mock struct {
 
 var _ MTLSKeystore = &Mock{}
 
-func (m *Mock) ListClientCertificates(ctx context.Context) (*ListClientCertificatesResponse, error) {
-	args := m.Called(ctx)
+func (m *Mock) ListClientCertificates(ctx context.Context, params ListClientCertificatesRequest) (*ListClientCertificatesResponse, error) {
+	args := m.Called(ctx, params)
 
 	if args.Get(0) == nil {
 		return nil, args.Error(1)

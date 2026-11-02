@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/session"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/internal/request"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/session"
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 )
 
@@ -51,9 +52,7 @@ func (e *edgeworkers) GetPermissionGroup(ctx context.Context, params GetPermissi
 		return nil, fmt.Errorf("%s: %w: %s", ErrGetPermissionGroup, ErrStructValidation, err)
 	}
 
-	uri := fmt.Sprintf("/edgeworkers/v1/groups/%s", params.GroupID)
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/groups/%s", params.GroupID).Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrGetPermissionGroup, err)
 	}
@@ -76,9 +75,7 @@ func (e *edgeworkers) ListPermissionGroups(ctx context.Context) (*ListPermission
 	logger := e.Log(ctx)
 	logger.Debug("ListPermissionGroups")
 
-	uri := "/edgeworkers/v1/groups"
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, uri, nil)
+	req, err := request.NewGet(ctx, "/edgeworkers/v1/groups").Build()
 	if err != nil {
 		return nil, fmt.Errorf("%w: failed to create request: %s", ErrListPermissionGroups, err)
 	}

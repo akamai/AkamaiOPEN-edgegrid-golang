@@ -7,7 +7,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v14/pkg/errs"
+	"github.com/akamai/AkamaiOPEN-edgegrid-golang/v15/pkg/errs"
 )
 
 type (
@@ -308,11 +308,12 @@ func (e *Error) Error() string {
 //
 //nolint:gocyclo
 func (e *Error) Is(target error) bool {
-	errorMatchers := []struct {
+	type errorMatcher struct {
 		targetErr error
 		status    int64
 		errType   string
-	}{
+	}
+	errorMatchers := []errorMatcher{
 		{ErrGetCASetNotFound, http.StatusNotFound, caSetNotFoundType},
 		{ErrGetCASetVersionNotFound, http.StatusNotFound, caSetVersionNotFoundType},
 		{ErrGetCASetActivationNotFound, http.StatusNotFound, caSetActivationNotFoundType},
