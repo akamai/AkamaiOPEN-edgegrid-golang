@@ -4,14 +4,14 @@ FROM docker.akamai.com/images/golang:1.26.9-alpine3.23
 COPY certs /certs
 
 # Set up APK repositories
-RUN echo "https://repos.akamai.com/artifactory/upstream-alpine/v3.22/main/" > /etc/apk/repositories && \
-    echo "https://repos.akamai.com/artifactory/upstream-alpine/v3.22/community/" >> /etc/apk/repositories
+RUN echo "https://repos.akamai.com/artifactory/upstream-alpine/v3.23/main/" > /etc/apk/repositories && \
+    echo "https://repos.akamai.com/artifactory/upstream-alpine/v3.23/community/" >> /etc/apk/repositories
 ENV SSL_CLIENT_CERT_FILE=/certs/crt.pem \
     SSL_CLIENT_KEY_FILE=/certs/key.pem
 COPY certs/ca.pem /usr/local/share/ca-certificates
 
 # Ensure CA certificates are recognized
-# NOTE: Our ca.pem contains multiple certs; update-ca-certificates will warn and skip,
+# NOTE: Our ca.pem contains multiple certificates; update-ca-certificates will warn and skip,
 # but OpenSSL still trusts it, so apk works correctly.
 RUN apk --no-cache add ca-certificates
 RUN update-ca-certificates
@@ -24,7 +24,7 @@ COPY proxy/go_proxy.py /usr/local/bin/go-proxy
 RUN chmod +x /usr/local/bin/go-proxy
 
 # Set GOTOLCHAIN to local for repeatable builds
-# Disable Go checksum database as there is no connectivity
+# Disable the Go checksum database as there is no connectivity
 ENV GOTOLCHAIN=local \
     GOSUMDB=off
 
@@ -40,12 +40,8 @@ RUN echo "Installing goimports" && \
     go-proxy install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     echo "Installing golangci-lint" && \
     go-proxy install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} && \
-    echo "Installing gocov" && \
+    echo "Installing gocover-cobertura" && \
     go-proxy install github.com/boumenot/gocover-cobertura@${GOCOVER_COBERTURA_VERSION} && \
-
-#    go-proxy install github.com/axw/gocov/gocov@${GOCOV_VERSION} && \
-#    echo "Installing gocov-xml" && \
-#    go-proxy install github.com/AlekSi/gocov-xml@${GOCOV_XML_VERSION} && \
     echo "Installing go-junit-report" && \
     go-proxy install github.com/jstemmer/go-junit-report/v2@${GO_JUNIT_REPORT_VERSION}
 

@@ -49,6 +49,7 @@ pipeline {
                 sh '''
                     set -e
                     make tidy
+                    git diff --exit-code go.mod go.sum
                     make fmt-check
                     make lint
                 '''
@@ -64,8 +65,10 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    make test-verbose
+                    test_status=0
+                    make test-verbose || test_status=$?
                     make create-junit-report
+                    [ "$test_status" -eq 0 ] || exit "$test_status"
                     make create-coverage-files
                 '''
                 recordCoverage(
@@ -106,15 +109,19 @@ pipeline {
     }
     post {
         always {
-            junit testResults: 'test/tests.xml',
-                allowEmptyResults: false,
-                healthScaleFactor: 1.0
+            catchError(buildResult: 'FAILURE', stageResult: 'FAILURE') {
+                junit testResults: 'test/tests.xml',
+                    allowEmptyResults: false,
+                    healthScaleFactor: 1.0
+            }
             archiveArtifacts artifacts: 'test/**',
                 allowEmptyArchive: true,
                 fingerprint: true
             script {
                 emailNotify()
             }
+        }
+        cleanup {
             deleteDir()
         }
     }
