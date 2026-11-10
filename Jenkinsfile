@@ -95,7 +95,10 @@ pipeline {
                 script {
                     // PR builds: CHANGE_BRANCH; multibranch: BRANCH_NAME; plain pipeline: GIT_BRANCH (origin/...)
                     def branch = env.CHANGE_BRANCH ?: env.BRANCH_NAME ?: env.GIT_BRANCH ?: 'unknown'
-                    def branchPrefix = branch.replaceFirst('^origin/', '').split('/')[0].replaceAll('[^A-Za-z0-9._-]', '-')
+                    def allowedPrefixes = ['master', 'develop', 'feature', 'release', 'bugfix', 'hotfix']
+                    def rawPrefix = branch.replaceFirst('^origin/', '').split('/')[0]
+                    // Branches outside the gitflow prefixes are reported as 'feature'
+                    def branchPrefix = allowedPrefixes.contains(rawPrefix) ? rawPrefix : 'feature'
                     runOsvScan(
                         projectName: 'akamaiopen-edgegrid-golang',
                         projectVersion: "akamaiopen-edgegrid-golang-${branchPrefix}",
