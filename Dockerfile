@@ -11,7 +11,7 @@ ENV SSL_CLIENT_CERT_FILE=/certs/crt.pem \
 COPY certs/ca.pem /usr/local/share/ca-certificates
 
 # Ensure CA certificates are recognized
-# NOTE: Our ca.pem contains multiple certificates; update-ca-certificates will warn and skip,
+# NOTE: Our ca.pem contains multiple certificates; update-ca-certificates will warn and skip the file,
 # but OpenSSL still trusts it, so apk works correctly.
 RUN apk --no-cache add ca-certificates
 RUN update-ca-certificates
@@ -23,7 +23,7 @@ RUN apk --no-cache add make bash curl python3 git
 COPY proxy/go_proxy.py /usr/local/bin/go-proxy
 RUN chmod +x /usr/local/bin/go-proxy
 
-# Install go tools
+# Install Go tools
 ARG GOIMPORTS_VERSION=v0.50.0
 ARG GOLANGCI_LINT_VERSION=v2.13.2
 #ARG GOCOV_VERSION=v1.1.0
