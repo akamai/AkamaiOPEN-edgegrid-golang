@@ -25,8 +25,7 @@ RUN chmod +x /usr/local/bin/go-proxy
 
 # Set GOTOLCHAIN to local for repeatable builds
 # Disable the Go checksum database as there is no connectivity
-ENV GOTOLCHAIN=local \
-    GOSUMDB=off
+ENV GOTOLCHAIN=local 
 
 # Install go tools
 ARG GOIMPORTS_VERSION=v0.50.0
