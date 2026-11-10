@@ -23,6 +23,7 @@ RUN apk --no-cache add make bash curl python3 git
 COPY proxy/go_proxy.py /usr/local/bin/go-proxy
 RUN chmod +x /usr/local/bin/go-proxy
 
+ENV GOTOOLCHAIN=auto
 # Install go tools
 ARG GOIMPORTS_VERSION=v0.50.0
 ARG GOLANGCI_LINT_VERSION=v2.13.2
