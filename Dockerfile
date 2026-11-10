@@ -17,7 +17,7 @@ RUN apk --no-cache add ca-certificates
 RUN update-ca-certificates
 
 # Install necessary packages
-RUN apk --no-cache add make bash curl python3
+RUN apk --no-cache add make bash curl python3 git
 
 # Install go-proxy
 COPY proxy/go_proxy.py /usr/local/bin/go-proxy
