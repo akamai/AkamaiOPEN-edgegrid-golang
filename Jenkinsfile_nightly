@@ -80,7 +80,8 @@ pipeline {
                                 parser : 'COBERTURA',
                                 pattern: 'test/coverage/coverage.xml'
                             ]],
-                    sourceDirectories: [[path: '.']]
+                    sourceDirectories: [[path: '.']],
+                    failOnError: true
                 )
             }
         }

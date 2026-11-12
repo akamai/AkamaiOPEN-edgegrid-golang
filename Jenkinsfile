@@ -76,20 +76,11 @@ pipeline {
                                 parser : 'COBERTURA',
                                 pattern: 'test/coverage/coverage.xml'
                             ]],
-                    sourceDirectories: [[path: '.']]
+                    sourceDirectories: [[path: '.']],
+                    failOnError: true
                 )
             }
         }
-        // stage('Sonar Analysis') {
-        //     steps {
-        //         script {
-        //             runStaticCodeAnalysis(
-        //                 languagesUsed: 'go',
-        //                 sonarPropertiesFilePath: '.config/sonarqube/sonar-project.properties'
-        //             )
-        //         }
-        //     }
-        // }
         stage('Black Duck Scan') {
             steps {
                 script {
