@@ -37,9 +37,6 @@ $(BIN)/go-junit-report: PACKAGE=github.com/jstemmer/go-junit-report/v2@$(GO_JUNI
 GOLANGCILINT = $(BIN)/golangci-lint
 $(BIN)/golangci-lint: PACKAGE=github.com/golangci/golangci-lint/v2/cmd/golangci-lint@$(GOLANGCI_LINT_VERSION)
 
-.PHONY: install-tools
-install-tools: $(GOIMPORTS) $(GOLANGCILINT) $(GOCOVER_COBERTURA) $(GOJUNITREPORT)
-
 
 .PHONY: all
 all: clean tidy fmt-check lint test-verbose create-junit-report create-coverage-files clean-tools
