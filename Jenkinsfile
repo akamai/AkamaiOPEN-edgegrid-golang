@@ -67,14 +67,8 @@ pipeline {
                 }
             }
             steps {
-                sh '''
-                    set -e
-                    test_status=0
-                    make test-verbose || test_status=$?
-                    make create-junit-report
-                    [ "$test_status" -eq 0 ] || exit "$test_status"
-                    make create-coverage-files
-                '''
+                sh 'make test-verbose'
+                sh 'make create-coverage-files'
                 recordCoverage(
                     tools: [[
                                 parser : 'COBERTURA',
@@ -83,6 +77,12 @@ pipeline {
                     sourceDirectories: [[path: '.']],
                     failOnError: true
                 )
+            }
+            post {
+                always {
+                    // Runs also when tests fail, so that the failed tests are reported
+                    sh 'make create-junit-report'
+                }
             }
         }
         stage('Black Duck Scan') {
