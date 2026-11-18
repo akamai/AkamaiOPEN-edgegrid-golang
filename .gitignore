@@ -11,6 +11,10 @@ coverage.out
 /bin/
 /test/
 
+# CI: client certificates and the go-proxy tooling checkout, created by the Jenkins pipeline
+/certs/
+/proxy/
+
 # eclipse
 .classpath
 .project

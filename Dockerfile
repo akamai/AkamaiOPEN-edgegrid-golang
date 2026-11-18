@@ -22,7 +22,7 @@ RUN update-ca-certificates
 
 # Install necessary packages
 RUN --mount=type=bind,source=certs,target=/certs \
-    apk --no-cache add make bash curl python3
+    apk --no-cache add make bash python3
 
 # Install go-proxy
 COPY proxy/go_proxy.py /usr/local/bin/go-proxy
