@@ -35,7 +35,10 @@ pipeline {
         }
         stage('CI Image Build') {
             steps {
-                sh 'DOCKER_BUILDKIT=1 docker build -t akamaiopen-edgegrid-golang/base .'
+                sh '''
+                    docker version
+                    docker build -t akamaiopen-edgegrid-golang/base .
+                '''
             }
         }
         stage('Code Quality Checks') {
