@@ -1,0 +1,6 @@
+# Send only what the Dockerfile uses to the build context.
+*
+!certs
+!proxy/go_proxy.py
+!go.mod
+!go.sum

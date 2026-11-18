@@ -1,7 +1,7 @@
 FROM docker.akamai.com/images/golang:1.26.9-alpine3.23
 
-# Install the certs
-COPY certs /certs
+# NOTE: The client certificate and key are never stored in the image. During the build they are bind-mounted
+# from the build context (BuildKit required). At runtime the CI mounts the workspace certs directory at /certs.
 
 # Set up APK repositories
 RUN echo "https://repos.akamai.com/artifactory/upstream-alpine/v3.23/main/" > /etc/apk/repositories && \
@@ -13,11 +13,13 @@ COPY certs/ca.pem /usr/local/share/ca-certificates
 # Ensure CA certificates are recognized
 # NOTE: Our ca.pem contains multiple certificates; update-ca-certificates will warn and skip the file,
 # but OpenSSL still trusts it, so apk works correctly.
-RUN apk --no-cache add ca-certificates
+RUN --mount=type=bind,source=certs,target=/certs \
+    apk --no-cache add ca-certificates
 RUN update-ca-certificates
 
 # Install necessary packages
-RUN apk --no-cache add make bash curl python3 git
+RUN --mount=type=bind,source=certs,target=/certs \
+    apk --no-cache add make bash curl python3 git
 
 # Install go-proxy
 COPY proxy/go_proxy.py /usr/local/bin/go-proxy
@@ -31,7 +33,8 @@ ARG GOLANGCI_LINT_VERSION=v2.13.2
 ARG GOCOVER_COBERTURA_VERSION=v1.5.0
 ARG GO_JUNIT_REPORT_VERSION=v2.1.0
 
-RUN echo "Installing goimports" && \
+RUN --mount=type=bind,source=certs,target=/certs \
+    echo "Installing goimports" && \
     go-proxy install golang.org/x/tools/cmd/goimports@${GOIMPORTS_VERSION} && \
     echo "Installing golangci-lint" && \
     go-proxy install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@${GOLANGCI_LINT_VERSION} && \
@@ -43,4 +46,5 @@ RUN echo "Installing goimports" && \
 # Pre-fetch dependencies to speed up builds
 WORKDIR /tmp/go-mod-download
 COPY go.mod go.sum ./
-RUN go-proxy mod download
+RUN --mount=type=bind,source=certs,target=/certs \
+    go-proxy mod download

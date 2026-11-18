@@ -35,13 +35,14 @@ pipeline {
         }
         stage('CI Image Build') {
             steps {
-                sh 'docker build -t akamaiopen-edgegrid-golang/base .'
+                sh 'DOCKER_BUILDKIT=1 docker build -t akamaiopen-edgegrid-golang/base .'
             }
         }
         stage('Code Quality Checks') {
             agent {
                 docker {
                     image 'akamaiopen-edgegrid-golang/base'
+                    args "-v ${env.WORKSPACE}/certs:/certs:ro"
                     reuseNode true
                 }
             }
@@ -59,6 +60,7 @@ pipeline {
             agent {
                 docker {
                     image 'akamaiopen-edgegrid-golang/base'
+                    args "-v ${env.WORKSPACE}/certs:/certs:ro"
                     reuseNode true
                 }
             }
