@@ -84,6 +84,10 @@ lint: | $(GOLANGCILINT) ; $(info $(M) Running golangci-lint...) @
 tidy: ; $(info $(M) Running go mod tidy...) @
 	$Q $(GOMODTIDY)
 
+.PHONY: tidy-check
+tidy-check: ; $(info $(M) Checking go.mod and go.sum are tidy...) @ ## Fail if go mod tidy would change go.mod or go.sum
+	$Q $(GOMODTIDY) -diff
+
 .PHONY: fmt
 fmt:  | $(GOIMPORTS); $(info $(M) Running goimports...) @ ## Run goimports on all source files
 	$Q $(GOIMPORTS) -w .

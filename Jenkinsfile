@@ -52,8 +52,7 @@ pipeline {
             steps {
                 sh '''
                     set -e
-                    make tidy
-                    git diff --exit-code go.mod go.sum
+                    make tidy-check
                     make fmt-check
                     make lint
                 '''
