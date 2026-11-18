@@ -10,6 +10,9 @@ ENV SSL_CLIENT_CERT_FILE=/certs/crt.pem \
     SSL_CLIENT_KEY_FILE=/certs/key.pem
 COPY certs/ca.pem /usr/local/share/ca-certificates
 
+# Use the Go from this image only, never download another toolchain: fail fast if go.mod requires a newer Go.
+ENV GOTOOLCHAIN=local
+
 # Ensure CA certificates are recognized
 # NOTE: Our ca.pem contains multiple certificates; update-ca-certificates will warn and skip the file,
 # but OpenSSL still trusts it, so apk works correctly.
